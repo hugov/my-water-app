@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./
+    command: flask run -h 0.0.0.0
+    volumes:
+      - ./:/usr/src/app/
+    ports:
+      - 5000:5000
+    env_file:
+      - ./.env
+    deploy:
+      resources:
+        limits:
+          cpus: '0.10'
+          memory: 384M
+        reservations:
+          cpus: '0.05'
+          memory: 128M
+  
+  database:
+    image: mysql:5.7
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'my-water-db'
+      #MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'root'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - "./sql/schema.sql:/docker-entrypoint-initdb.d/1.sql"
+      - "./sql/data.sql:/docker-entrypoint-initdb.d/2.sql"
+volumes:
+  mysql_data:
