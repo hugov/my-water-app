@@ -20,21 +20,16 @@ services:
           memory: 128M
   
   database:
-    image: mysql:5.7
-    container_name: mysql
-    restart: always
-    environment:
-      MYSQL_DATABASE: 'my-water-db'
-      #MYSQL_USER: 'root'
-      MYSQL_PASSWORD: 'root'
-      MYSQL_ROOT_PASSWORD: 'root'
-    ports:
-      - '3306:3306'
-    expose:
-      - '3306'
+    image: postgres:16-alpine
+    env_file:
+      - .env
+    restart: always # reinicia automáticamente quando acontece algum erro
     volumes:
-      - mysql_data:/var/lib/mysql
-      - "./sql/schema.sql:/docker-entrypoint-initdb.d/1.sql"
-      - "./sql/data.sql:/docker-entrypoint-initdb.d/2.sql"
+      - db:/var/lib/postgresql/data
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./sql/data.sql:/docker-entrypoint-initdb.d/2.sql
+    ports:
+      - "5432:5432"
 volumes:
-  mysql_data:
+  db:
+    driver: local
