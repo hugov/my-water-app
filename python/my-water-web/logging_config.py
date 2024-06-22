@@ -5,7 +5,7 @@ def setup_logging():
     
     # Configura o logger raiz
     logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
     # Formato dos logs
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')

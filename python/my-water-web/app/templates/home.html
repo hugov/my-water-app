@@ -1,10 +1,6 @@
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>Home</title>
-    </head>
-    <body>
-        <h1>Bem-vindo à Minha Aplicação Flask!</h1>
-    </body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Water App - Home {% endblock %}</h1>
+
+{% endblock %}
