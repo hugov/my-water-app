@@ -1,10 +1,18 @@
 import logging
 
-from flask import current_app as app, render_template, jsonify
+from flask import current_app as app, render_template, flash
 from app.services.product_service import ProductService
 from app.models import Product
 
 logger = logging.getLogger(__name__)
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('error/error404.html'), 404
+
+@app.errorhandler(500)
+def page_not_found(error):
+    return render_template('error/error500.html'), 404
 
 @app.route('/')
 def home():
@@ -28,12 +36,17 @@ def produto_adicionar():
 
     _product = Product()
     _product.name = 'Galão de água - Lindoia 20L'
+    _product.name = 'G'
     _product.description = 'Galão de água - Lindoia 20L'
     _product.price = 15.0
     _product.status = 1
 
+    msg = validate_produto_adicionar(_product)
+    if msg:
+        flash(msg)
+        return render_template('/product/add.html', product = _product)
+
     product = ProductService.create_product(_product)
-    #return jsonify(product)
 
     return render_template('/product/add.html', product = product)
 
@@ -51,3 +64,11 @@ def produto_alterar():
 def produto_exluir():
     logger.info("Acessou a listagem de produtos")
     return render_template('/product/index.html')
+
+def validate_produto_adicionar(produto: Product):
+    if not produto:
+        return 'Nenhum produto foi informado'
+    elif produto.description == None or produto.description == '':
+        return 'Preencha a descrição do produto'
+    elif len(produto.description) >= 5 and len(produto.description) <= 50:
+        return 'A descrição do produto precisa ter entre 5 e 50 caracteres'
