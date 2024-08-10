@@ -1,39 +1,56 @@
 {% extends 'base.html' %}
 
+{% block title %}Meus produtos{% endblock %}
+
 {% block content %}
-    <h1>{% block title %} Sobre {% endblock %}</h1>
-    <form method="post">
-        <p>
-            <label for="title">Title</label>
-            <input type="text" name="title"
-                   placeholder="Book title">
-            </input>
-        </p>
+    
+    <div class="flex flex-col">
+        <div class="-m-1.5 overflow-x-auto">
+          <div class="p-1.5 min-w-full inline-block align-middle">
 
-        <p>
-            <label for="author">Author</label>
-            <input type="text" name="author"
-                   placeholder="Book author">
-            </input>
-        </p>
+            <button value="Adicionar" title="Adicionar ..."></button>
+            <div class="border rounded-lg overflow-hidden dark:border-neutral-700">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+                <thead class="bg-gray-50 dark:bg-neutral-700">
+                    <tr>
+                        <th scope="col" class="py-3 ps-4">
+                        <div class="flex items-center h-5">
+                            <input id="hs-table-checkbox-all" type="checkbox" class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800">
+                            <label for="hs-table-checkbox-all" class="sr-only">Checkbox</label>
+                        </div>
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Nome</th>
+                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Descrição</th>
+                        <th scope="col" class="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Preço</th>
+                        <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase dark:text-neutral-500">Situação</th>
+                        <th scope="col" class="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase dark:text-neutral-500"></th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-neutral-700">
+                    {% for item in products %}
+                        <tr>
+                            <td class="py-3 ps-4">
+                            <div class="flex items-center h-5">
+                                <input id="hs-table-checkbox-1" type="checkbox" class="border-gray-200 rounded text-blue-600 focus:ring-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-blue-500 dark:checked:border-blue-500 dark:focus:ring-offset-gray-800">
+                                <label for="hs-table-checkbox-1" class="sr-only">Checkbox</label>
+                            </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">{{ item.name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ item.description }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ item.price }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ 'Ativo' if item.status == 1 else 'Inativo' }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
+                            <button type="button" class="inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-blue-600 hover:text-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:text-blue-500 dark:hover:text-blue-400">Delete</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                  
+                </tbody>
+              </table>
 
-        <p>
-            <label for="pages_num">Number of pages</label>
-            <input type="number" name="pages_num"
-                   placeholder="Number of pages">
-            </input>
-        </p>
-        <p>
-        <label for="review">Review</label>
-        <br>
-        <textarea name="review"
-                  placeholder="Review"
-                  rows="15"
-                  cols="60"
-                  ></textarea>
-        </p>
-        <p>
-            <button type="submit">Submit</button>
-        </p>
-    </form>
+            </div>
+          </div>
+        </div>
+    </div>
+
 {% endblock %}

@@ -17,7 +17,7 @@ def page_not_found(error):
 @app.route('/')
 def home():
     logger.info("Acessou a página inicial")
-    return render_template('home.html')
+    return render_template('home.html', current_page = "dashboard")
 
 @app.route('/about')
 def about():
@@ -28,7 +28,9 @@ def about():
 @app.route('/produto-lista')
 def produto_lista():
     logger.info("Listando os produtos cadastrados")
-    return render_template('/product/index.html')
+
+    product_list = ProductService.list_product()
+    return render_template('/product/index.html', products =  product_list, current_page = "products")
 
 @app.route('/produto-adicionar')
 def produto_adicionar():
@@ -48,7 +50,7 @@ def produto_adicionar():
 
     product = ProductService.create_product(_product)
 
-    return render_template('/product/add.html', product = product)
+    return render_template('/product/add.html', product = product, current_page = "products")
 
 @app.route('/produto-consultar')
 def produto_consultar():
