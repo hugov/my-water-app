@@ -33,7 +33,6 @@
                             </tr>
                         </thead>
                         <tbody id="productTableBody">
-                            <!-- Linhas de produtos dinâmicas -->
                         </tbody>
                     </table>
                 </div>
@@ -65,7 +64,7 @@
     console.log('Produtos: ', products_list);
 
     let currentPage = 1;
-    const rowsPerPage = 5;
+    const rowsPerPage = 20;
 
     function renderTable() {
 
@@ -129,7 +128,6 @@
     document.getElementById('searchInput').addEventListener('input', renderTable);
 
     function consultar(param_id) {
-        //url = "{{ url_for('produto_consultar', id = 1 ) }}";
         url = "/produto-consultar/" + param_id;
         location.href = url;
     }
