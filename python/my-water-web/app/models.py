@@ -14,3 +14,13 @@ class Product(db.Model):
     
     def __repr__(self):
         return '<id {}>'.format(self.id)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'price': self.price,
+            'status': self.status,
+            'creation_date': self.creation_date.isoformat()  # Converte a data para string
+        }

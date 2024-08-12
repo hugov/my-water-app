@@ -26,4 +26,9 @@ class ProductRepository:
     @staticmethod
     def delete_by_id(id):
         logger.debug(f"Excluindo o produto: {id}")
-        return Product.query.delete(id)
+
+        product = Product.query.get(id)
+        if product:
+            db.session.delete(product)
+            db.session.commit()
+

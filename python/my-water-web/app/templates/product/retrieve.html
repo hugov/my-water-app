@@ -1,39 +1,43 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>{% block title %} Sobre {% endblock %}</h1>
-    <form method="post">
-        <p>
-            <label for="title">Title</label>
-            <input type="text" name="title"
-                   placeholder="Book title">
-            </input>
-        </p>
 
-        <p>
-            <label for="author">Author</label>
-            <input type="text" name="author"
-                   placeholder="Book author">
-            </input>
-        </p>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
 
-        <p>
-            <label for="pages_num">Number of pages</label>
-            <input type="number" name="pages_num"
-                   placeholder="Number of pages">
-            </input>
-        </p>
-        <p>
-        <label for="review">Review</label>
-        <br>
-        <textarea name="review"
-                  placeholder="Review"
-                  rows="15"
-                  cols="60"
-                  ></textarea>
-        </p>
-        <p>
-            <button type="submit">Submit</button>
-        </p>
-    </form>
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Consulta de produto</h2>
+        <form action="#" method="POST">
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700 font-medium mb-2">Nome</label>
+                <input type="text" id="name" name="name" value="{{product.name if product.name != None}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="mb-4">
+                <label for="description" class="block text-gray-700 font-medium mb-2">Descrição</label>
+                <textarea id="description" name="description" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" required>{{product.description}}</textarea>
+            </div>
+            <div class="mb-4">
+                <label for="price" class="block text-gray-700 font-medium mb-2">Preço</label>
+                <input type="number" id="price" name="price" value="{{product.price}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="mb-6">
+                <label for="status" class="block text-gray-700 font-medium mb-2">Situação</label>
+                <select id="status" name="status" value="{{product.status}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <option value="">Selecione</option>
+                    <option value="1" {{ 'selected' if product.status == 1 }} >Ativo</option>
+                    <option value="0" {{ 'selected' if product.status == 0 }} >Inativo</option>
+                </select>
+            </div>
+            <div class="flex justify-between">
+                <button type="button" onclick="history.back()" class="bg-gray-300 text-gray-700 px-6 py-3 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">Cancelar</button>
+            </div>
+        </form>
+    </div>
 {% endblock %}

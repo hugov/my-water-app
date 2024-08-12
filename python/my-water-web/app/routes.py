@@ -1,6 +1,6 @@
 import logging
 
-from flask import current_app as app, render_template, flash
+from flask import current_app as app, render_template, flash, request, redirect
 from app.services.product_service import ProductService
 from app.models import Product
 
@@ -29,48 +29,74 @@ def about():
 def produto_lista():
     logger.info("Listando os produtos cadastrados")
 
-    product_list = ProductService.list_product()
-    return render_template('/product/index.html', products =  product_list, current_page = "products")
+    products = ProductService.list_product()
+    products_list = [product.to_dict() for product in products]
 
-@app.route('/produto-adicionar')
+    return render_template('/product/index.html', products =  products_list, current_page = "products")
+
+@app.route('/produto-adicionar', methods=['GET' , 'POST'])
 def produto_adicionar():
-    logger.info("Acessou a listagem de produtos")
+    logger.info("Adicionando um novo produto")
 
     _product = Product()
-    _product.name = 'Galão de água - Lindoia 20L'
-    _product.name = 'G'
-    _product.description = 'Galão de água - Lindoia 20L'
-    _product.price = 15.0
-    _product.status = 1
 
-    msg = validate_produto_adicionar(_product)
-    if msg:
-        flash(msg)
-        return render_template('/product/add.html', product = _product)
+    if request.method == 'GET':
+        return render_template('/product/add.html', product = _product, current_page = "products")
+    else:
+        _product.name = request.form.get('name')
+        _product.description = request.form.get('description')
+        _product.price = request.form.get('price')
+        _product.status = request.form.get('status')
 
-    product = ProductService.create_product(_product)
+        msg = validate_produto_adicionar(_product)
+        if msg:
+            flash(msg)
+            return render_template('/product/add.html', product = _product, current_page = "products")
 
-    return render_template('/product/add.html', product = product, current_page = "products")
+        ProductService.create_product(_product)
+        return redirect('/produto-lista')
 
-@app.route('/produto-consultar')
-def produto_consultar():
+@app.route('/produto-consultar/<int:id>')
+def produto_consultar(id):
+    logger.info(f"Consultando o produto {id}")
+    
+    _product = ProductService.get_product(id)
+    return render_template('/product/retrieve.html', product = _product, current_page = "products")
+
+@app.route('/produto-alterar/<int:id>', methods=['GET', 'POST'])
+def produto_alterar(id):
     logger.info("Acessou a listagem de produtos")
-    return render_template('/product/retrieve.html')
 
-@app.route('/produto-alterar')
-def produto_alterar():
-    logger.info("Acessou a listagem de produtos")
-    return render_template('/product/update.html')
+    _product = ProductService.get_product(id)
 
-@app.route('/produto-excluir')
-def produto_exluir():
+    if request.method == 'GET':
+        return render_template('/product/update.html', product = _product, current_page = "products")
+    else:
+        _product.name = request.form.get('name')
+        _product.description = request.form.get('description')
+        _product.price = request.form.get('price')
+        _product.status = request.form.get('status')
+
+        msg = validate_produto_adicionar(_product)
+        if msg:
+            flash(msg)
+            return render_template('/product/update.html', product = _product, current_page = "products")
+
+        ProductService.create_product(_product)
+        return redirect('/produto-lista')
+
+@app.route('/produto-excluir/<int:id>')
+def produto_exluir(id):
     logger.info("Acessou a listagem de produtos")
-    return render_template('/product/index.html')
+    ProductService.delete_product(id=id)
+    return redirect('/produto-lista')
 
 def validate_produto_adicionar(produto: Product):
     if not produto:
         return 'Nenhum produto foi informado'
     elif produto.description == None or produto.description == '':
         return 'Preencha a descrição do produto'
-    elif len(produto.description) >= 5 and len(produto.description) <= 50:
+    elif len(produto.description) < 5 and len(produto.description) > 50:
         return 'A descrição do produto precisa ter entre 5 e 50 caracteres'
+    else:
+        return ''
