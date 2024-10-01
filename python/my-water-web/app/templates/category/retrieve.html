@@ -27,12 +27,8 @@
 
             <div class="mb-4">
                 <label for="image" class="block text-gray-700 font-medium mb-2">Imagem</label>
-                <input type="text" id="image" name="image" value="{{ category.image }}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-
-            <div class="mb-4">
-                <label for="creation_date" class="block text-gray-700 font-medium mb-2">Data de Criação</label>
-                <input type="text" id="creation_date" name="creation_date" value="{{ category.creation_date }}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" readonly>
+                <img src="{{ url_for('get_categoria_imagem', filename=category.image.split('\\')[-1]) }}" alt="Imagem">
+                <p class="mt-2">{{ category.image.split('\\')[-1] }}</p>
             </div>
 
             <div class="mb-6">

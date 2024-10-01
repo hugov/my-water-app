@@ -1,6 +1,11 @@
 import logging
+import os
 
-from flask import current_app as app, render_template, flash, request, redirect
+from flask import current_app as app, render_template, flash, request, redirect, request, send_from_directory
+from werkzeug.utils import secure_filename
+from PIL import Image
+from datetime import datetime
+
 from app.services.product_service import ProductService
 from app.services.category_service import CategoryService
 from app.services.user_service import UserService
@@ -111,6 +116,11 @@ def validate_produto_adicionar(produto: Product):
 # Rota: Categoria
 #
 
+def create_image_name():
+    data = datetime.now()
+    data_format = data.strftime("%Y%m%d%H%M%S")
+    return f"categoria_{data_format}.jpg"
+
 @app.route('/categoria-lista')
 def categoria_lista():
     logger.info("Listando as categorias cadastradas")
@@ -120,6 +130,9 @@ def categoria_lista():
     
     return render_template('/category/index.html', categories=categories_list, current_page="categories")
 
+@app.route('/categoria-imagem/<filename>')
+def get_categoria_imagem(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route('/categoria-adicionar', methods=['GET', 'POST'])
 def categoria_adicionar():
@@ -133,7 +146,29 @@ def categoria_adicionar():
         _category.name = request.form.get('name')
         _category.description = request.form.get('description')
         _category.image = request.form.get('image')
-        _category.creation_date = request.form.get('creation_date')
+
+        if 'image' not in request.files:
+            return redirect(request.url)
+        
+        file = request.files['image']
+        
+        if file.filename == '':
+            return redirect(request.url)
+        
+        if file:
+            #filename = secure_filename(file.filename) # Nome vindo do HTML
+            filename = secure_filename(create_image_name())
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            
+            # Redimensionar e cortar a imagem
+            #with Image.open(filepath) as img:
+            #    img = img.resize((300, 300))  # Redimensionar para 300x300 pixels
+            #    img.save(filepath)  # Salvar a imagem redimensionada
+            
+            # Salvar o caminho da imagem no banco de dados
+            _category.image = filepath
+
         _category.status = request.form.get('status')
         
         msg = validate_categoria_adicionar(_category)
@@ -164,8 +199,20 @@ def categoria_alterar(id):
     else:
         _category.name = request.form.get('name')
         _category.description = request.form.get('description')
-        _category.image = request.form.get('image')
-        _category.creation_date = request.form.get('creation_date')
+
+        if 'image' in request.files and request.files['image'].filename != '':
+            file = request.files['image']
+            
+            if file.filename == '':
+                return redirect(request.url)
+            
+            if file:
+                filename = secure_filename(_category.image.split('\\')[-1])
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                file.save(filepath)
+
+                _category.image = filepath
+
         _category.status = request.form.get('status')
         
         msg = validate_categoria_adicionar(_category)
@@ -180,7 +227,7 @@ def categoria_alterar(id):
 @app.route('/categoria-excluir/<int:id>')
 def categoria_excluir(id):
     logger.info(f"Excluindo a categoria {id}")
-    CategoryService.delete_categoria(id=id)
+    CategoryService.delete_category(id=id)
     return redirect('/categoria-lista')
 
 
@@ -376,3 +423,17 @@ def validate_perfil_adicionar(profile: Category):
         return 'Preencha o nome do perfil'
     else:
         return ''
+
+#
+# Rota: Catalogo
+#
+
+@app.route('/catalogo-lista')
+def catalogo_lista():
+    logger.info("Listando as categorias cadastradas")
+    
+    #profiles = ProfileService.list_profile()
+    #profiles_list = [profile.to_dict() for profile in profiles]
+    #return render_template('/catalog/index.html', profiles=profiles_list, current_page="profiles")
+    
+    return render_template('/catalog/index.html', current_page="catalogs")

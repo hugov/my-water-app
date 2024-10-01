@@ -7,8 +7,11 @@
 
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js" integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    
 
     <!--<script src="https://preline.co/assets/vendor/preline/dist/index.js?v=2.3.0"></script>-->
 
@@ -22,7 +25,7 @@
             <div class="flex h-16 items-center justify-between">
               <div class="flex items-center">
                 <div class="flex-shrink-0">
-                  <img class="h-8 w-8" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company">
+                  <i class="fa fa-arrow-circle-up fa-5x text-white" style="transform: rotate(45deg);"></i>
                 </div>
                 <div class="hidden md:block">
                   <div class="ml-10 flex items-baseline space-x-4">
@@ -30,9 +33,12 @@
                     <!--
                     <a href="#" class="rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white" aria-current="page">Dashboard</a>
                     <a href="{{ url_for('produto_lista') }}" class="rounded-md px-3 py-2 text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">Meus produtos</a>
-                    -->
                     <a href="/" class="px-3 py-2 rounded-md text-sm font-medium {% if current_page == 'dashboard' %}bg-gray-900 text-white aria-current="page"{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
-                        Dashboard
+                      Dashboard
+                    </a>
+                    -->
+                    <a href="{{ url_for('catalogo_lista') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if current_page == 'catalogs' %}bg-gray-900 text-white aria-current="page"{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
+                      Dashboard
                     </a>
                     <a href="{{ url_for('produto_lista') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if current_page == 'products' %}bg-gray-900 text-white aria-current="page"{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
                         Produtos
@@ -46,6 +52,7 @@
                     <a href="{{ url_for('perfil_lista') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if current_page == 'profiles' %}bg-gray-900 text-white aria-current="page"{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
                       Perfis
                     </a>
+                    
                     <a href="/" class="px-3 py-2 rounded-md text-sm font-medium {% if current_page == 'home' %}bg-gray-900 text-white aria-current="page"{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
                         Meus pedidos
                     </a>
@@ -162,6 +169,9 @@
           </div>
         </main>
     </div>
+
+
+    
 
 </body>
 </html>

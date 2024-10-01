@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Meus produtos{% endblock %}
+
+{% block content %}
+
+<div class="container mx-auto p-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <!-- Card 1 -->
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="flex justify-center items-center h-48 bg-gray-200">
+                <img src="{{ url_for('static', filename='images/semfoto.jpg') }}" alt="Imagem não disponível">
+            </div>
+            <div class="p-4 text-center">
+                <h2 class="font-bold text-lg">Bebida</h2>
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="flex justify-center items-center h-48 bg-gray-200">
+                <img src="{{ url_for('static', filename='images/semfoto.jpg') }}" alt="Imagem não disponível">
+            </div>
+            <div class="p-4 text-center">
+                <h2 class="font-bold text-lg">Cama, Mesa e Banho</h2>
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="flex justify-center items-center h-48 bg-gray-200">
+                <img src="{{ url_for('static', filename='images/semfoto.jpg') }}" alt="Imagem não disponível">
+            </div>
+            <div class="p-4 text-center">
+                <h2 class="font-bold text-lg">Maquiagem</h2>
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="flex justify-center items-center h-48 bg-gray-200">
+                <img src="{{ url_for('static', filename='images/semfoto.jpg') }}" alt="Imagem não disponível">
+            </div>
+            <div class="p-4 text-center">
+                <h2 class="font-bold text-lg">Papelaria</h2>
+            </div>
+        </div>
+
+        <!-- Card 5 -->
+        <div class="bg-white rounded-lg shadow-md">
+            <div class="flex justify-center items-center h-48 bg-gray-200">
+                <img src="{{ url_for('static', filename='images/semfoto.jpg') }}" alt="Imagem não disponível">
+            </div>
+            <div class="p-4 text-center">
+                <h2 class="font-bold text-lg">Pizza</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

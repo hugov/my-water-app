@@ -2,6 +2,14 @@
 
 {% block content %}
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.css" integrity="sha512-C4k/QrN4udgZnXStNFS5osxdhVECWyhMsK1pnlk+LkC7yJGCqoYxW4mH3/ZXLweODyzolwdWSqmmadudSHMRLA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        #image {
+            max-width: 100%;
+        }
+    </style>
+
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <ul>
@@ -14,7 +22,7 @@
 
     <div class="bg-white p-8 rounded-lg shadow-lg w-full">
         <h2 class="text-2xl font-bold mb-6 text-gray-800">Atualização de Categoria</h2>
-        <form action="#" method="POST" enctype="multipart/form-data">
+        <form id="categoryForm" action="#" method="POST" enctype="multipart/form-data">
             <div class="mb-4">
                 <label for="name" class="block text-gray-700 font-medium mb-2">Nome</label>
                 <input type="text" id="name" name="name" value="{{category.name if category.name != None}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
@@ -23,10 +31,20 @@
                 <label for="description" class="block text-gray-700 font-medium mb-2">Descrição</label>
                 <textarea id="description" name="description" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" required>{{category.description}}</textarea>
             </div>
+            
             <div class="mb-4">
-                <label for="image" class="block text-gray-700 font-medium mb-2">Imagem</label>
-                <input type="file" id="image" name="image" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label for="inputImage" class="block text-gray-700 font-medium mb-2">Upload de imagem</label>
+                <input type="file" id="inputImage" class="mb-4 w-full border border-gray-300 rounded p-2" accept="image/*">
+
+                {% if category.image %}
+                    <div class="mb-4" id="preview-container">
+                        <img id="image" src="{{ url_for('get_categoria_imagem', filename=category.image.split('\\')[-1]) }}">
+                        <p class="mt-2">{{ category.image.split('\\')[-1] }}</p>
+                    </div>
+                {% endif %}
+
             </div>
+
             <div class="mb-6">
                 <label for="status" class="block text-gray-700 font-medium mb-2">Situação</label>
                 <select id="status" name="status" value="{{category.status}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
@@ -41,5 +59,75 @@
             </div>
         </form>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.js" integrity="sha512-LjPH94gotDTvKhoxqvR5xR2Nur8vO5RKelQmG52jlZo7SwI5WLYwDInPn1n8H9tR0zYqTqfNxWszUEy93cHHwg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        let cropper;
+
+        document.getElementById('inputImage').addEventListener('change', function (e) {
+            const files = e.target.files;
+            const done = (url) => {
+                document.getElementById('image').src = url;
+                document.getElementById('preview-container').style.display = 'block';
+            };
+
+            if (files && files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    done(event.target.result);
+                };
+                reader.readAsDataURL(files[0]);
+            }
+        });
+
+        document.getElementById('image').addEventListener('load', function () {
+            if (cropper) {
+                cropper.destroy();
+            }
+            cropper = new Cropper(this, {
+                aspectRatio: 1.8, // Define um aspecto de recorte de 1:1
+                viewMode: 1,
+                autoCropArea: 1,
+                responsive: true,
+                ready() {
+                    document.getElementById('cropButton').classList.remove('hidden');
+                }
+            });
+        });
+
+        document.getElementById('categoryForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Evitar o envio normal do formulário
+
+            console.log('Update - submit');
+
+            const canvas = cropper.getCroppedCanvas({
+                width: 300, // Define a largura do canvas
+                height: 300 // Define a altura do canvas
+            });
+            canvas.toBlob(function (blob) {
+                const formData = new FormData(event.target); // Cria um FormData a partir do formulário
+                formData.append('image', blob, 'cropped.jpg'); // Adiciona a imagem recortada
+
+                console.log('Update - formData: ', formData);
+
+                // Enviar os dados do formulário para o servidor
+                fetch(event.target.action, {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => {
+                    if (response.ok) {
+                        //window.location.reload(); // Recarregar a página após o upload
+                        window.location = '/categoria-lista';
+                    } else {
+                        console.error('Erro ao fazer upload da imagem.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                });
+            });
+        });
+    </script>
 
 {% endblock %}
