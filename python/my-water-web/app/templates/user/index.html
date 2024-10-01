@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 
-{% block title %}Meus produtos{% endblock %}
+{% block title %}Usuários{% endblock %}
 
 {% block content %}
-    
+
 <div class="flex flex-col">
     <div class="-m-1.5 overflow-x-auto">
         <div class="p-1.5 min-w-full inline-block align-middle">
 
             <div class="container mx-auto">
                 <div class="flex justify-between items-center mb-4">
-                    <h1 class="text-2xl font-bold">Listagem de Produtos</h1>
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onclick="location.href='{{ url_for('produto_adicionar') }}';">
-                        Novo Produto
+                    <h1 class="text-2xl font-bold">Listagem de Usuários</h1>
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" onclick="location.href='{{ url_for('usuario_adicionar') }}';">
+                        Novo Usuário
                     </button>
                 </div>
         
@@ -26,13 +26,16 @@
                             <tr>
                                 <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(0)">ID</th>
                                 <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(1)">Nome</th>
-                                <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(2)">Descrição</th>
-                                <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(3)">Preço</th>
-                                <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(4)">Situação</th>
+                                <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(2)">Email</th>
+                                <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(3)">Documento</th>
+                                <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(4)">Telefone</th>
+                                <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(5)">Username</th>
+                                <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(6)">Data de Criação</th>
+                                <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(7)">Situação</th>
                                 <th class="px-6 py-3 text-left"></th>
                             </tr>
                         </thead>
-                        <tbody id="productTableBody">
+                        <tbody id="userTableBody">
                         </tbody>
                     </table>
                 </div>
@@ -48,42 +51,42 @@
                 </div>
             </div>
             
-            
         </div>
     </div>
 </div>
 
-<!-- Ícones da Font Awesome (ou qualquer outro pacote de ícones que preferir) -->
-
 <!-- Script de Ordenação, Paginação e Filtro -->
 <script>
 
-    const products_list = {{ products | tojson }}
-    console.log('Produtos: ', products_list);
+    const users_list = {{ users | tojson }};
+    console.log('Usuários: ', users_list);
 
     let currentPage = 1;
     const rowsPerPage = 20;
 
     function renderTable() {
 
-        const tableBody = document.getElementById('productTableBody');
+        const tableBody = document.getElementById('userTableBody');
         tableBody.innerHTML = '';
 
-        const filteredProducts = filterProducts(products_list);
-        const paginatedProducts = paginateProducts(filteredProducts, currentPage, rowsPerPage);
+        const filteredUsers = filterUsers(users_list);
+        const paginatedUsers = paginateUsers(filteredUsers, currentPage, rowsPerPage);
 
-        paginatedProducts.forEach(product => {
+        paginatedUsers.forEach(user => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td class="px-6 py-4">${product.id}</td>
-                <td class="px-6 py-4">${product.name}</td>
-                <td class="px-6 py-4">${product.description}</td>
-                <td class="px-6 py-4">${product.price}</td>
-                <td class="px-6 py-4">${product.status == 1 ? 'Ativo' : 'Inativo'}</td>
+                <td class="px-6 py-4">${user.id}</td>
+                <td class="px-6 py-4">${user.name}</td>
+                <td class="px-6 py-4">${user.email}</td>
+                <td class="px-6 py-4">${user.document}</td>
+                <td class="px-6 py-4">${user.phone}</td>
+                <td class="px-6 py-4">${user.username}</td>
+                <td class="px-6 py-4">${user.creation_date}</td>
+                <td class="px-6 py-4">${user.status == 1 ? 'Ativo' : 'Inativo'}</td>
                 <td class="px-6 py-4">
-                    <button title='Consultar' class="text-green-500 hover:text-green-700 mr-2" onclick="consultar(${product.id});"><i class="fas fa-eye"></i></button>
-                    <button title='Alterar'   class="text-blue-500 hover:text-blue-700 mr-2"   onclick="alterar(${product.id});"><i class="fas fa-edit"></i></button>
-                    <button title='Excluir'   class="text-red-500 hover:text-red-700"          onclick="excluir(${product.id});"><i class="fas fa-trash-alt"></i></button>
+                    <button title='Consultar' class="text-green-500 hover:text-green-700 mr-2" onclick="consultar(${user.id});"><i class="fas fa-eye"></i></button>
+                    <button title='Alterar' class="text-blue-500 hover:text-blue-700 mr-2" onclick="alterar(${user.id});"><i class="fas fa-edit"></i></button>
+                    <button title='Excluir' class="text-red-500 hover:text-red-700" onclick="excluir(${user.id});"><i class="fas fa-trash-alt"></i></button>
                 </td>
             `;
             tableBody.appendChild(row);
@@ -93,15 +96,15 @@
     }
 
     function sortTable(columnIndex) {
-        products.sort((a, b) => {
+        users_list.sort((a, b) => {
             const column = Object.keys(a)[columnIndex];
             return a[column].localeCompare(b[column]);
         });
         renderTable();
     }
 
-    function paginateProducts(products, page, rowsPerPage) {
-        return products.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+    function paginateUsers(users, page, rowsPerPage) {
+        return users.slice((page - 1) * rowsPerPage, page * rowsPerPage);
     }
 
     function nextPage() {
@@ -114,10 +117,10 @@
         renderTable();
     }
 
-    function filterProducts(products) {
+    function filterUsers(users) {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        return products.filter(product =>
-            Object.values(product).some(value =>
+        return users.filter(user =>
+            Object.values(user).some(value =>
                 typeof value === 'string' && value.toLowerCase().includes(searchTerm)
             )
         );
@@ -126,17 +129,17 @@
     document.getElementById('searchInput').addEventListener('input', renderTable);
 
     function consultar(param_id) {
-        url = "/produto-consultar/" + param_id;
+        url = "/usuario-consultar/" + param_id;
         location.href = url;
     }
 
     function alterar(param_id) {
-        url = "/produto-alterar/" + param_id;
+        url = "/usuario-alterar/" + param_id;
         location.href = url;
     }
 
     function excluir(param_id) {
-        url = "/produto-excluir/" + param_id;
+        url = "/usuario-excluir/" + param_id;
         location.href = url;
     }
 
