@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Consulta de Perfil</h2>
+        <form action="#" method="POST">
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700 font-medium mb-2">Nome</label>
+                <input type="text" id="name" name="name" value="{{ profile.name if profile.name != None }}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="description" class="block text-gray-700 font-medium mb-2">Descrição</label>
+                <textarea id="description" name="description" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" required>{{ profile.description }}</textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="allows_create" class="block text-gray-700 font-medium mb-2">Permitir Criação</label>
+                <input type="checkbox" id="allows_create" name="allows_create" {{ 'checked' if profile.allows_create }}>
+            </div>
+
+            <div class="mb-4">
+                <label for="allows_retrieve" class="block text-gray-700 font-medium mb-2">Permitir Consulta</label>
+                <input type="checkbox" id="allows_retrieve" name="allows_retrieve" {{ 'checked' if profile.allows_retrieve }}>
+            </div>
+
+            <div class="mb-4">
+                <label for="allows_updated" class="block text-gray-700 font-medium mb-2">Permitir Atualização</label>
+                <input type="checkbox" id="allows_updated" name="allows_updated" {{ 'checked' if profile.allows_updated }}>
+            </div>
+
+            <div class="mb-4">
+                <label for="allows_delete" class="block text-gray-700 font-medium mb-2">Permitir Exclusão</label>
+                <input type="checkbox" id="allows_delete" name="allows_delete" {{ 'checked' if profile.allows_delete }}>
+            </div>
+
+            <div class="mb-6">
+                <label for="status" class="block text-gray-700 font-medium mb-2">Situação</label>
+                <select id="status" name="status" value="{{ profile.status }}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <option value="">Selecione</option>
+                    <option value="1" {{ 'selected' if profile.status == 1 }}>Ativo</option>
+                    <option value="0" {{ 'selected' if profile.status == 0 }}>Inativo</option>
+                </select>
+            </div>
+
+            <div class="flex justify-between">
+                <button type="button" onclick="history.back()" class="bg-gray-300 text-gray-700 px-6 py-3 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

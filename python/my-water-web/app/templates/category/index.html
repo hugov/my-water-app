@@ -27,7 +27,6 @@
                                 <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(0)">ID</th>
                                 <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(1)">Nome</th>
                                 <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(2)">Descrição</th>
-                                <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(3)">Imagem</th>
                                 <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(4)">Data de Criação</th>
                                 <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(5)">Situação</th>
                                 <th class="px-6 py-3 text-left"></th>
@@ -76,8 +75,10 @@
                 <td class="px-6 py-4">${category.id}</td>
                 <td class="px-6 py-4">${category.name}</td>
                 <td class="px-6 py-4">${category.description}</td>
-                <td class="px-6 py-4"><img src="${category.image}" alt="Imagem" class="w-12 h-12"></td>
-                <td class="px-6 py-4">${category.creation_date}</td>
+                <td class="px-6 py-4">
+                    ${new Date(category.creation_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })} 
+                    ${new Date(category.creation_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                </td>
                 <td class="px-6 py-4">${category.status == 1 ? 'Ativo' : 'Inativo'}</td>
                 <td class="px-6 py-4">
                     <button title='Consultar' class="text-green-500 hover:text-green-700 mr-2" onclick="consultar(${category.id});"><i class="fas fa-eye"></i></button>

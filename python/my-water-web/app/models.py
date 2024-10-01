@@ -8,13 +8,12 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
-    document = db.Column(db.String(50), unique=True, nullable=False)  # CPF ou CNPJ, dependendo do caso
-    phone = db.Column(db.String(20))  # Número de telefone
+    document = db.Column(db.String(50), unique=True, nullable=False)
+    phone = db.Column(db.String(20))
     username = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)  # Armazene a senha de forma segura (hash)
+    password = db.Column(db.String(255), nullable=False)
     creation_date = db.Column(db.DateTime(), default=datetime.datetime.now)
-    status = db.Column(db.Integer, nullable=False, default=1)  # Ex: 1 para ativo, 0 para inativo
-
+    status = db.Column(db.Integer, nullable=False, default=1)
     def __repr__(self):
         return '<User id {}>'.format(self.id)
 
@@ -26,7 +25,7 @@ class User(db.Model):
             'document': self.document,
             'phone': self.phone,
             'username': self.username,
-            'creation_date': self.creation_date.isoformat(),  # Converte a data para string
+            'creation_date': self.creation_date,
             'status': self.status
         }
 
@@ -37,7 +36,7 @@ class Product(db.Model):
     name = db.Column(db.String(150))
     description = db.Column(db.String(150))
     price = db.Column(db.Integer)
-    status = db.Column(db.Integer)
+    status = db.Column(db.Integer, nullable=False, default=1)
     creation_date = db.Column(db.DateTime(), default=datetime.datetime.now)
     
     def __repr__(self):
@@ -50,7 +49,7 @@ class Product(db.Model):
             'description': self.description,
             'price': self.price,
             'status': self.status,
-            'creation_date': self.creation_date.isoformat()  # Converte a data para string
+            'creation_date': self.creation_date
         }
 
 class Category(db.Model):
@@ -60,7 +59,7 @@ class Category(db.Model):
     name = db.Column(db.String(150), nullable=False)
     description = db.Column(db.String(255))
     image = db.Column(db.String(255))  # URL ou caminho da imagem
-    status = db.Column(db.Integer, nullable=False, default=1)  # Ex: 1 para ativo, 0 para inativo
+    status = db.Column(db.Integer, nullable=False, default=1)
     creation_date = db.Column(db.DateTime(), default=datetime.datetime.now)
 
     def __repr__(self):
@@ -73,5 +72,34 @@ class Category(db.Model):
             'description': self.description,
             'image': self.image,
             'status': self.status,
-            'creation_date': self.creation_date.isoformat()  # Converte a data para string
+            'creation_date': self.creation_date
+        }
+
+class Profile(db.Model):
+    __tablename__ = 'profiles'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), nullable=False)
+    description = db.Column(db.String(255))
+    allows_create = db.Column(db.Integer)
+    allows_retrieve = db.Column(db.Integer)
+    allows_updated = db.Column(db.Integer)
+    allows_delete = db.Column(db.Integer)
+    status = db.Column(db.Integer, nullable=False, default=1)
+    creation_date = db.Column(db.DateTime(), default=datetime.datetime.now)
+
+    def __repr__(self):
+        return '<Category id {}>'.format(self.id)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'allows_create': self.allows_create,
+            'allows_retrieve': self.allows_retrieve,
+            'allows_updated': self.allows_updated,
+            'allows_delete': self.allows_delete,
+            'status': self.status,
+            'creation_date': self.creation_date
         }

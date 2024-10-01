@@ -27,9 +27,7 @@
                                 <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(0)">ID</th>
                                 <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(1)">Nome</th>
                                 <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(2)">Email</th>
-                                <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(3)">Documento</th>
                                 <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(4)">Telefone</th>
-                                <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(5)">Username</th>
                                 <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(6)">Data de Criação</th>
                                 <th class="px-6 py-3 text-left cursor-pointer" onclick="sortTable(7)">Situação</th>
                                 <th class="px-6 py-3 text-left"></th>
@@ -78,10 +76,11 @@
                 <td class="px-6 py-4">${user.id}</td>
                 <td class="px-6 py-4">${user.name}</td>
                 <td class="px-6 py-4">${user.email}</td>
-                <td class="px-6 py-4">${user.document}</td>
-                <td class="px-6 py-4">${user.phone}</td>
-                <td class="px-6 py-4">${user.username}</td>
-                <td class="px-6 py-4">${user.creation_date}</td>
+                <td class="px-6 py-4">${formatPhoneNumber(user.phone)}</td>
+                <td class="px-6 py-4">
+                    ${new Date(user.creation_date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })} 
+                    ${new Date(user.creation_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                </td>
                 <td class="px-6 py-4">${user.status == 1 ? 'Ativo' : 'Inativo'}</td>
                 <td class="px-6 py-4">
                     <button title='Consultar' class="text-green-500 hover:text-green-700 mr-2" onclick="consultar(${user.id});"><i class="fas fa-eye"></i></button>

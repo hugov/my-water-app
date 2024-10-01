@@ -4,7 +4,8 @@ from flask import current_app as app, render_template, flash, request, redirect
 from app.services.product_service import ProductService
 from app.services.category_service import CategoryService
 from app.services.user_service import UserService
-from app.models import Product, Category, User
+from app.services.profile_service import ProfileService
+from app.models import Product, Category, User, Profile
 
 logger = logging.getLogger(__name__)
 
@@ -223,8 +224,8 @@ def usuario_adicionar():
         _user.email = request.form.get('email')
         _user.document = request.form.get('document')
         _user.phone = request.form.get('phone')
-        _user.username = request.form.get('phone')
-        _user.password = request.form.get('phone')
+        _user.username = request.form.get('username')
+        _user.password = request.form.get('password')
         _user.creation_date = request.form.get('creation_date')
         _user.status = request.form.get('status')
         
@@ -258,8 +259,8 @@ def usuario_alterar(id):
         _user.email = request.form.get('email')
         _user.document = request.form.get('document')
         _user.phone = request.form.get('phone')
-        _user.username = request.form.get('phone')
-        _user.password = request.form.get('phone')
+        _user.username = request.form.get('username')
+        _user.password = request.form.get('password')
         _user.creation_date = request.form.get('creation_date')
         _user.status = request.form.get('status')
         
@@ -275,7 +276,7 @@ def usuario_alterar(id):
 @app.route('/usuario-excluir/<int:id>')
 def usuario_excluir(id):
     logger.info(f"Excluindo o usuário {id}")
-    UserService.delete_categoria(id=id)
+    UserService.delete_user(id=id)
     return redirect('/usuario-lista')
 
 
@@ -284,5 +285,94 @@ def validate_usuario_adicionar(user: Category):
         return 'Nenhum usuário foi informada'
     elif user.name is None or user.name == '':
         return 'Preencha o seu nome'
+    else:
+        return ''
+
+#
+# Rota: Perfil
+#
+
+@app.route('/perfil-lista')
+def perfil_lista():
+    logger.info("Listando as perfis cadastradas")
+    
+    profiles = ProfileService.list_profile()
+    profiles_list = [profile.to_dict() for profile in profiles]
+    
+    return render_template('/profile/index.html', profiles=profiles_list, current_page="profiles")
+
+
+@app.route('/perfil-adicionar', methods=['GET', 'POST'])
+def perfil_adicionar():
+    logger.info("Adicionando um perfis")
+    
+    _profile = Profile()
+    
+    if request.method == 'GET':
+        return render_template('/profile/add.html', profile=_profile, current_page="profiles")
+    else:
+        _profile.name = request.form.get('name')
+        _profile.description = request.form.get('description')
+        _profile.allows_create = 1 if request.form.get('allows_create', 0) == 'on' else 0
+        _profile.allows_retrieve = 1 if request.form.get('allows_retrieve', 0) == 'on' else 0
+        _profile.allows_updated = 1 if request.form.get('allows_updated', 0) == 'on' else 0
+        _profile.allows_delete = 1 if request.form.get('allows_delete', 0) == 'on' else 0
+        _profile.status = request.form.get('status')
+        
+        msg = validate_perfil_adicionar(_profile)
+        if msg:
+            flash(msg)
+            return render_template('/profile/add.html', profile=_profile, current_page="profiles")
+        
+        ProfileService.create_profile(_profile)
+        return redirect('/perfil-lista')
+
+
+@app.route('/perfil-consultar/<int:id>')
+def perfil_consultar(id):
+    logger.info(f"Consultando o perfis {id}")
+    
+    _profile = ProfileService.get_profile(id)
+    return render_template('/profile/retrieve.html', profile=_profile, current_page="profiles")
+
+
+@app.route('/perfil-alterar/<int:id>', methods=['GET', 'POST'])
+def perfil_alterar(id):
+    logger.info("Alterando a perfis")
+    
+    _profile = ProfileService.get_profile(id)
+    
+    if request.method == 'GET':
+        return render_template('/profile/update.html', profile=_profile, current_page="profiles")
+    else:
+        _profile.name = request.form.get('name')
+        _profile.description = request.form.get('description')
+        _profile.allows_create = 1 if request.form.get('allows_create', 0) == 'on' else 0
+        _profile.allows_retrieve = 1 if request.form.get('allows_retrieve', 0) == 'on' else 0
+        _profile.allows_updated = 1 if request.form.get('allows_updated', 0) == 'on' else 0
+        _profile.allows_delete = 1 if request.form.get('allows_delete', 0) == 'on' else 0
+        _profile.status = request.form.get('status')
+        
+        msg = validate_perfil_adicionar(_profile)
+        if msg:
+            flash(msg)
+            return render_template('/profile/update.html', profile=_profile, current_page="profiles")
+        
+        ProfileService.create_profile(_profile)
+        return redirect('/perfil-lista')
+
+
+@app.route('/perfil-excluir/<int:id>')
+def perfil_excluir(id):
+    logger.info(f"Excluindo o perfis {id}")
+    ProfileService.delete_profile(id=id)
+    return redirect('/perfil-lista')
+
+
+def validate_perfil_adicionar(profile: Category):
+    if not profile:
+        return 'Nenhum perfil foi informada'
+    elif profile.name is None or profile.name == '':
+        return 'Preencha o nome do perfil'
     else:
         return ''
