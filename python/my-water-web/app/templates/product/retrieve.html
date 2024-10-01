@@ -23,6 +23,15 @@
                 <label for="description" class="block text-gray-700 font-medium mb-2">Descrição</label>
                 <textarea id="description" name="description" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" required>{{product.description}}</textarea>
             </div>
+            <div class="mb-6">
+                <label for="category_id" class="block text-gray-700 font-medium mb-2">Categoria</label>
+                <select id="category_id" name="category_id" value="{{product.category_id}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <option value="">Selecione</option>
+                    {% for category in categories %}
+                        <option value="{{category.id}}" {{ 'selected' if category.id == product.category_id }} >{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
             <div class="mb-4">
                 <label for="price" class="block text-gray-700 font-medium mb-2">Preço</label>
                 <input type="number" id="price" name="price" value="{{product.price}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>

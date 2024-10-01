@@ -35,7 +35,8 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150))
     description = db.Column(db.String(150))
-    price = db.Column(db.Integer)
+    price = db.Column(db.Numeric(10, 2))
+    category_id = db.Column(db.Integer, db.ForeignKey("categories.id"))
     status = db.Column(db.Integer, nullable=False, default=1)
     creation_date = db.Column(db.DateTime(), default=datetime.datetime.now)
     
@@ -48,6 +49,7 @@ class Product(db.Model):
             'name': self.name,
             'description': self.description,
             'price': self.price,
+            'category_id': self.category_id,
             'status': self.status,
             'creation_date': self.creation_date
         }

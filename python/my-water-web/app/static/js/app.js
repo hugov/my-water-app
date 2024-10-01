@@ -14,3 +14,12 @@ function formatPhoneNumber(phone) {
       return phone; // Retorna o número original se não tiver 10 ou 11 dígitos
     }
 }
+
+function formatCurrencyWithPrefix(value) {
+  console.log( 'valor formatado: ', value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function formatCurrency(value) {
+  return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}

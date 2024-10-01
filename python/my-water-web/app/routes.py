@@ -50,12 +50,14 @@ def produto_adicionar():
     logger.info("Adicionando um novo produto")
 
     _product = Product()
+    _categories = CategoryService.list_category()
 
     if request.method == 'GET':
-        return render_template('/product/add.html', product = _product, current_page = "products")
+        return render_template('/product/add.html', product = _product, categories = _categories, current_page = "products")
     else:
         _product.name = request.form.get('name')
         _product.description = request.form.get('description')
+        _product.category_id = request.form.get('category_id')
         _product.price = request.form.get('price')
         _product.status = request.form.get('status')
 
@@ -72,19 +74,22 @@ def produto_consultar(id):
     logger.info(f"Consultando o produto {id}")
     
     _product = ProductService.get_product(id)
-    return render_template('/product/retrieve.html', product = _product, current_page = "products")
+    _categories = CategoryService.list_category()
+    return render_template('/product/retrieve.html', product = _product, categories = _categories, current_page = "products")
 
 @app.route('/produto-alterar/<int:id>', methods=['GET', 'POST'])
 def produto_alterar(id):
     logger.info("Acessou a listagem de produtos")
 
     _product = ProductService.get_product(id)
+    _categories = CategoryService.list_category()
 
     if request.method == 'GET':
-        return render_template('/product/update.html', product = _product, current_page = "products")
+        return render_template('/product/update.html', product = _product, categories = _categories, current_page = "products")
     else:
         _product.name = request.form.get('name')
         _product.description = request.form.get('description')
+        _product.category_id = request.form.get('category_id')
         _product.price = request.form.get('price')
         _product.status = request.form.get('status')
 
