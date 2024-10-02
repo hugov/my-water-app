@@ -1,7 +1,7 @@
 import logging
 import os
 
-from flask import current_app as app, render_template, flash, request, redirect, request, send_from_directory
+from flask import current_app as app, render_template, flash, request, redirect, send_from_directory, session, jsonify
 from werkzeug.utils import secure_filename
 from PIL import Image
 from datetime import datetime
@@ -10,7 +10,9 @@ from app.services.product_service import ProductService
 from app.services.category_service import CategoryService
 from app.services.user_service import UserService
 from app.services.profile_service import ProfileService
-from app.models import Product, Category, User, Profile
+from app.services.order_service import OrderService
+
+from app.models import Product, Category, User, Profile, Order, OrderItems
 
 logger = logging.getLogger(__name__)
 
@@ -114,6 +116,8 @@ def validate_produto_adicionar(produto: Product):
         return 'Preencha a descrição do produto'
     elif len(produto.description) < 5 and len(produto.description) > 50:
         return 'A descrição do produto precisa ter entre 5 e 50 caracteres'
+    elif produto.category_id == None or produto.category_id == '-1':
+        return 'Selecione uma opção válida da categoria'
     else:
         return ''
 
@@ -436,9 +440,93 @@ def validate_perfil_adicionar(profile: Category):
 @app.route('/catalogo-lista')
 def catalogo_lista():
     logger.info("Listando as categorias cadastradas")
+
+    _categories = CategoryService.list_category()
+    return render_template('/catalog/index.html', categories = _categories, current_page="catalogs")
+
+
+@app.route('/catalogo/<int:category_id>')
+def catalogo_item(category_id: int):
+    logger.info("Listando as categorias cadastradas")
+
+    _products = ProductService.list_product_by_category(category_id)
+    return render_template('/catalog/item.html', products = _products, current_page="catalogs")
+
+#
+# Rota: Carrinho de compras
+#
+
+@app.route('/add_to_cart', methods=['POST'])
+def add_to_cart():
+    product_id = request.json['id']
+    product_name = request.json['name']
+    product_price = request.json['price']
+    quantity = request.json['quantity']
     
-    #profiles = ProfileService.list_profile()
-    #profiles_list = [profile.to_dict() for profile in profiles]
-    #return render_template('/catalog/index.html', profiles=profiles_list, current_page="profiles")
+    if 'cart' not in session:
+        session['cart'] = []
     
-    return render_template('/catalog/index.html', current_page="catalogs")
+    # Adiciona ou atualiza o item no carrinho
+    cart = session['cart']
+    existing_item = next((item for item in cart if item['name'] == product_name), None)
+    if existing_item:
+        existing_item['quantity'] += quantity
+    else:
+        cart.append({'id': product_id, 'name': product_name, 'price': product_price, 'quantity': quantity})
+
+    session.modified = True  # Marca a sessão como modificada
+    return jsonify(cart)
+
+@app.route('/get_cart', methods=['GET'])
+def get_cart():
+    return jsonify(session.get('cart', []))
+
+@app.route('/limpar_carrinho', methods=['GET'])
+def limpar_carrinho():
+    session.pop('cart', None)
+    return redirect('/catalogo-lista')
+
+@app.route('/mostrar-carrinho', methods=['GET'])
+def mostrar_carrinho():
+    return render_template('/catalog/cart.html')
+
+@app.route('/finalizar-carrinho', methods=['POST'])
+def finalizar_carrinho():
+    logger.info('Finalizando o carrinho de compra')
+
+    order = Order()
+    order.name = request.form.get('name')
+    order.train_carriage = int(request.form.get('train_carriage', 0))
+    order.seat = int(request.form.get('seat', 0))
+    order.status = 1
+
+    OrderService.create_order(order)
+    logger.debug(f"Pedido {order} inserido com sucesso")
+
+    total_order_value = 0
+
+    cart = session.get('cart')
+    if cart:
+        for item_tmp in cart:
+           order_item = OrderItems()
+           order_item.order_id = order.id
+           order_item.product_id = item_tmp.get('id')
+           
+           quantity = item_tmp.get('quantity')
+           order_item.quantity = quantity
+
+           total_value = float(item_tmp.get('price', 0)) * quantity
+           order_item.total_value = total_value
+
+           total_order_value = round(total_order_value + total_value, 2)
+
+           OrderService.create_order_item(order_item)
+           logger.debug(f"Itens do pedido {order_item} inserido com sucesso")
+
+    order.total_value = total_order_value
+    OrderService.create_order(order)
+
+    session.pop('cart', None)
+    logger.debug("Itens removidos da sessão")
+
+    return render_template('/catalog/index.html')

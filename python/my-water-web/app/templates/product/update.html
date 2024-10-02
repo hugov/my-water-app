@@ -26,7 +26,7 @@
             <div class="mb-6">
                 <label for="categoria" class="block text-gray-700 font-medium mb-2">Categoria</label>
                 <select id="category_id" name="category_id" value="{{product.category_id}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Selecione</option>
+                    <option value="-1">Selecione</option>
                     {% for category in categories %}
                         <option value="{{category.id}}" {{ 'selected' if category.id == product.category_id }} >{{ category.name }}</option>
                     {% endfor %}
@@ -40,8 +40,8 @@
                 <label for="status" class="block text-gray-700 font-medium mb-2">Situação</label>
                 <select id="status" name="status" value="{{product.status}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     <option value="">Selecione</option>
-                    <option value="1" {{ 'selected' if product.status == 1 }} >Ativo</option>
-                    <option value="0" {{ 'selected' if product.status == 0 }} >Inativo</option>
+                    <option value="1" {{ 'selected' if product.status == '1' }} >Ativo</option>
+                    <option value="0" {{ 'selected' if product.status == '0' }} >Inativo</option>
                 </select>
             </div>
             <div class="flex justify-between">

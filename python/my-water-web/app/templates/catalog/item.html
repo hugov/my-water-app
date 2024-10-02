@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}Meus produtos{% endblock %}
+
+{% block content %}
+
+<div class="container mx-auto p-4">
+    {% if products %}
+        
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Produtos disponíveis</h1>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+
+            {% for product in products %}
+                <div class="bg-gray-100 p-4 rounded-lg flex flex-col items-center justify-between">
+                    <div class="bg-gray-300 w-full h-32 rounded-md flex items-center justify-center">
+                        <span class="text-gray-500"><img src="{{ url_for('static', filename='images/semfoto.jpg') }}"></span>
+                    </div>
+                    <div class="mt-2 text-center">
+                        <p class="text-lg font-medium">{{product.name}}</p>
+                        <div class="flex items-center mt-3 space-x-3">
+                            <button class="bg-gray-200 text-gray-600 px-2 py-1 rounded-md" onclick="changeQuantity('item-id-{{ product.id }}', -1)">-</button>
+                            <input id="item-id-{{ product.id }}" type="number" value="0" min="0" class="w-12 text-center border border-gray-300 rounded-md" readonly>
+                            <button class="bg-gray-200 text-gray-600 px-2 py-1 rounded-md" onclick="changeQuantity('item-id-{{ product.id }}', 1)">+</button>
+                        </div>
+                        <p class="text-lg font-medium text-pink-600 mt-2">{{ product.price }}</p>
+                        <button class="mt-2 bg-blue-500 text-white px-4 py-2 rounded-md" onclick="addToCart('{{ product.id }}', '{{ product.name }}', '{{ product.price }}', 'item-id-{{ product.id }}')">Adicionar ao Carrinho</button>
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="flex justify-between items-center mt-10">
+            <button type="button" onclick="history.back()" class="bg-gray-300 text-gray-700 px-6 py-3 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">
+                Voltar para categoria
+            </button>
+        </div>
+    {% else %}
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Não existem produtos cadastrados nesta categoria.</h1>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Carrinho de Compras -->
+<div class="p-6 max-w-sm mx-auto bg-white rounded-xl shadow-md space-y-4 mt-6">
+    <div class="flex items-center justify-between">
+        <div class="text-xl font-medium text-black">Carrinho de Compras</div>
+    </div>
+    <div id="cartItems" class="space-y-4">
+        <!-- Os itens do carrinho aparecerão aqui -->
+        <p id="emptyCartMessage">Seu carrinho está vazio.</p>
+    </div>
+    <div class="flex justify-between text-lg font-bold">
+        <span>Total:</span>
+        <span id="cartTotal">R$ 0,00</span>
+    </div>
+    <div class="space-y-10 text-right">
+        <a href="{{ url_for('limpar_carrinho') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if current_page == 'profiles' %}bg-gray-900 text-white aria-current="page"{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
+            Limpar comprar
+        </a>
+        <a href="{{ url_for('mostrar_carrinho') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if current_page == 'profiles' %}bg-gray-900 text-white aria-current="page"{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
+            Finalizar compra
+        </a>
+    </div>
+</div>
+
+<script>
+    // Controle de carrinho de compras
+    let cart = [];
+
+    function changeQuantity(itemId, change) {
+        const input = document.getElementById(itemId);
+        let currentValue = parseInt(input.value);
+        let newValue = currentValue + change;
+        if (newValue < 0) {
+            newValue = 0;
+        }
+        input.value = newValue;
+    }
+
+    function addToCart(productId, productName, productPrice, itemId) {
+        const quantity = parseInt(document.getElementById(itemId).value);
+        if (quantity > 0) {
+            // Enviar requisição AJAX para adicionar ao carrinho
+            fetch('/add_to_cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: productId, name: productName, price: productPrice, quantity: quantity })
+            })
+            .then(response => response.json())
+            .then(cart => {
+                // Resetar o valor do campo de quantidade
+                document.getElementById(itemId).value = 0;
+                updateCartDisplay(cart);  // Atualizar exibição do carrinho com a resposta
+            })
+            .catch(error => console.error('Erro ao adicionar ao carrinho:', error));
+        } else {
+            alert('Adicione uma quantidade válida!');
+        }
+    }
+
+    function updateCartDisplay(cart) {
+        const cartItemsDiv = document.getElementById("cartItems");
+        if (cart.length > 0) {
+            cartItemsDiv.innerHTML = ''; // Limpar carrinho
+        }
+
+        let total = 0;
+        let cartCount = 0;
+
+        console.log('cart: ', cart);
+        if (cart.length === 0) {
+            document.getElementById("emptyCartMessage").style.display = "block";
+        } else {
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+
+                // Criar o item no carrinho
+                const cartItem = document.createElement("div");
+                cartItem.classList.add("flex", "justify-between", "border-b", "pb-2");
+                cartItem.innerHTML = `
+                    <span>${item.name} (x${item.quantity})</span>
+                    <span>R$ ${itemTotal.toFixed(2)}</span>
+                `;
+                cartItemsDiv.appendChild(cartItem);
+
+                cartCount += item.quantity;
+                document.getElementById('cart-counter').innerText = cartCount;
+            });
+            
+            console.log('Executando');
+            if(document.getElementById("emptyCartMessage")) {
+                console.log('Executando 1');
+                document.getElementById("emptyCartMessage").style.display = "none"; // Esconder mensagem de carrinho vazio
+            }
+
+            console.log('Executando 2');
+        }
+
+        // Atualizar o total
+        document.getElementById("cartTotal").innerText = `R$ ${total.toFixed(2)}`;
+    }
+
+    window.onload = function() {
+        fetch('/get_cart')
+            .then(response => response.json())
+            .then(cart => updateCartDisplay(cart))
+            .catch(error => console.error('Erro ao carregar o carrinho:', error));
+    };
+</script>
+
+{% endblock %}

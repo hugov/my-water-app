@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Meus produtos{% endblock %}
+
+{% block content %}
+
+<div class="container mx-auto p-4">
+    <!-- Carrinho de Compras -->
+    <div class="p-6 mx-auto bg-white rounded-xl shadow-md space-y-4 mt-6">
+        <div class="flex items-center justify-between">
+            <div class="text-2xl font-bold text-black">Carrinho de Compras</div>
+        </div>
+        <div id="cartItems" class="space-y-4">
+            <!-- Os itens do carrinho aparecerão aqui -->
+            <p id="emptyCartMessage">Seu carrinho está vazio.</p>
+        </div>
+        <div class="flex justify-between text-lg font-bold">
+            <span>Total:</span>
+            <span id="cartTotal">R$ 0,00</span>
+        </div>
+
+        <h2 class="text-2xl font-bold mb-6 text-black">Dados do cliente</h2>
+        <form id="finalizeForm" action="/finalizar-carrinho" method="POST">
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700 font-medium mb-2">Nome</label>
+                <input type="text" id="name" name="name" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="train_carriage" class="block text-gray-700 font-medium mb-2">Número do vagão do trem</label>
+                <input type="text" inputmode="numeric" pattern="\d*" id="train_carriage" name="train_carriage" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="seat" class="block text-gray-700 font-medium mb-2">Assento</label>
+                <input type="text" inputmode="numeric" pattern="\d*" id="seat" name="seat" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+
+            <div class="flex justify-between">
+                <button type="submit" class="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">Finalizar compra</button>
+                <button type="button" onclick="history.back()" class="bg-gray-300 text-gray-700 px-6 py-3 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300">Continuar comprando</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    // Controle de carrinho de compras
+    let cart = [];
+
+    document.getElementById('finalizeForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+
+        fetch(event.target.action, {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => {
+            if (response.ok) {
+                window.location = '/catalogo-lista';
+            } else {
+                console.error('Erro ao fazer upload da imagem.');
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao finalizar o carrinho: ', error);
+        });
+        
+    });
+
+    function finalizeCart() {
+        // Enviar requisição AJAX para adicionar ao carrinho
+        fetch('/finalizar-carrinho', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(cart => {
+            console.log('Compra finalizada com sucesso');
+        })
+        .catch(error => console.error('Erro ao finalizar o carrinho:', error));
+       
+    }
+
+    function updateCartDisplay(cart) {
+        const cartItemsDiv = document.getElementById("cartItems");
+        if (cart.length > 0) {
+            cartItemsDiv.innerHTML = ''; // Limpar carrinho
+        }
+
+        let total = 0;
+        let cartCount = 0;
+
+        console.log('cart: ', cart);
+        if (cart.length === 0) {
+            document.getElementById("emptyCartMessage").style.display = "block";
+        } else {
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+
+                // Criar o item no carrinho
+                const cartItem = document.createElement("div");
+                cartItem.classList.add("flex", "justify-between", "border-b", "pb-2");
+                cartItem.innerHTML = `
+                    <span>${item.name} (x${item.quantity})</span>
+                    <span>R$ ${itemTotal.toFixed(2)}</span>
+                `;
+                cartItemsDiv.appendChild(cartItem);
+
+                cartCount += item.quantity;
+                document.getElementById('cart-counter').innerText = cartCount;
+            });
+            
+            if(document.getElementById("emptyCartMessage")) {
+                document.getElementById("emptyCartMessage").style.display = "none"; // Esconder mensagem de carrinho vazio
+            }
+
+        }
+
+        // Atualizar o total
+        document.getElementById("cartTotal").innerText = `R$ ${total.toFixed(2)}`;
+    }
+
+    window.onload = function() {
+        fetch('/get_cart')
+            .then(response => response.json())
+            .then(cart => updateCartDisplay(cart))
+            .catch(error => console.error('Erro ao carregar o carrinho:', error));
+    };
+</script>
+
+{% endblock %}

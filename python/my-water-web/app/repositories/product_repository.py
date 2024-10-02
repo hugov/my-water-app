@@ -24,6 +24,11 @@ class ProductRepository:
         return Product.query.all()
 
     @staticmethod
+    def list_product_by_category(category_id):
+        logger.debug("Listando os produtos pela categoria")
+        return Product.query.filter_by(category_id=category_id).all()
+
+    @staticmethod
     def delete_by_id(id):
         logger.debug(f"Excluindo o produto: {id}")
 
