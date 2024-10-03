@@ -174,16 +174,17 @@ def categoria_adicionar():
         
         if file:
             filename = secure_filename(create_image_name())
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            _category.image = filepath
 
             allows_images_store_database = os.environ.get('ALLOWS_IMAGES_STORE_DATABASE')
             if allows_images_store_database:
                 _image_data = file.read()
                 _category.image_data = _image_data
             else:
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file.save(filepath)
             
+            _category.image = filepath
+
         _category.status = request.form.get('status')
         
         msg = validate_categoria_adicionar(_category)
