@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Relatório de Vendas{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-6">Relatório de Vendas</h2>
+
+    <form method="POST" action="{{ url_for('relatorio_vendas') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div>
+            <label for="categoria" class="block text-sm font-medium text-gray-700">Categoria:</label>
+            <input type="text" name="categoria" id="categoria" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </div>
+        
+        <div>
+            <label for="produto" class="block text-sm font-medium text-gray-700">Produto:</label>
+            <input type="text" name="produto" id="produto" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </div>
+        
+        <div>
+            <label for="data_inicio" class="block text-sm font-medium text-gray-700">Data Início:</label>
+            <input type="date" name="data_inicio" id="data_inicio" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </div>
+
+        <div>
+            <label for="data_fim" class="block text-sm font-medium text-gray-700">Data Fim:</label>
+            <input type="date" name="data_fim" id="data_fim" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+        </div>
+
+        <div class="col-span-1 md:col-span-2 flex justify-start items-end">
+            <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-white uppercase tracking-widest hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Filtrar
+            </button>
+        </div>
+    </form>
+
+    <form method="POST" action="{{ url_for('relatorio_vendas') }}" class="mb-6">
+        <input type="hidden" name="export_pdf" value="1">
+        <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-white uppercase tracking-widest hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+            Exportar para PDF
+        </button>
+    </form>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-200">
+            <thead>
+                <tr class="bg-gray-100 text-left">
+                    <th class="py-2 px-4 border-b border-gray-200">Categoria</th>
+                    <th class="py-2 px-4 border-b border-gray-200">Produto</th>
+                    <th class="py-2 px-4 border-b border-gray-200">Quantidade</th>
+                    <th class="py-2 px-4 border-b border-gray-200">Data de Venda</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venda in vendas %}
+                <tr class="hover:bg-gray-50">
+                    <td class="py-2 px-4 border-b border-gray-200">{{ venda.categoria }}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">{{ venda.produto }}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">{{ venda.quantidade }}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">{{ venda.data_venda.strftime("%d/%m/%Y") }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

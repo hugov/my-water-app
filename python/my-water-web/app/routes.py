@@ -1,16 +1,19 @@
 import logging
 import os
 
-from flask import current_app as app, render_template, flash, request, redirect, send_from_directory, session, jsonify
+from flask import current_app as app, render_template, flash, request, redirect, send_from_directory, session, jsonify, send_file
 from werkzeug.utils import secure_filename
 from PIL import Image
 from datetime import datetime
+from fpdf import FPDF
+from io import BytesIO
 
 from app.services.product_service import ProductService
 from app.services.category_service import CategoryService
 from app.services.user_service import UserService
 from app.services.profile_service import ProfileService
 from app.services.order_service import OrderService
+from app.services.report_service import ReportService
 
 from app.models import Product, Category, User, Profile, Order, OrderItems
 
@@ -530,3 +533,59 @@ def finalizar_carrinho():
     logger.debug("Itens removidos da sessão")
 
     return render_template('/catalog/index.html')
+
+#
+# Rota: Relatórios
+#
+
+@app.route('/relatorio-vendas', methods=['GET', 'POST'])
+def relatorio_vendas():
+    logger.info("Exibindo o relatório de vendas")
+    
+    if request.method == 'GET':
+        return render_template('report/report_sales.html', current_page="report_sales")
+    else:
+
+        category_filter = request.form.get('categoria')
+        product_filter = request.form.get('produto')
+        start_date = request.form.get('data_inicio')
+        end_date = request.form.get('data_fim')
+
+        if start_date:
+            data_inicio = datetime.strptime(start_date, '%Y-%m-%d')
+        if end_date:
+            data_fim = datetime.strptime(end_date, '%Y-%m-%d')
+
+        vendas = ReportService.report_sales(category_filter, product_filter, data_inicio, data_fim)
+
+        if request.method == 'POST' and request.form.get('export_pdf'):
+            return exportar_pdf(vendas)
+
+        return render_template('report/report_sales.html', vendas=vendas)
+
+def exportar_pdf(vendas):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    pdf.cell(200, 10, txt="Relatório de Vendas", ln=True, align='C')
+    pdf.ln(10)
+
+    pdf.cell(50, 10, 'Categoria', border=1)
+    pdf.cell(50, 10, 'Produto', border=1)
+    pdf.cell(30, 10, 'Quantidade', border=1)
+    pdf.cell(50, 10, 'Data de Venda', border=1)
+    pdf.ln()
+
+    for venda in vendas:
+        pdf.cell(50, 10, venda.categoria, border=1)
+        pdf.cell(50, 10, venda.produto, border=1)
+        pdf.cell(30, 10, str(venda.quantidade), border=1)
+        pdf.cell(50, 10, venda.data_venda.strftime("%d/%m/%Y"), border=1)
+        pdf.ln()
+
+    buffer = BytesIO()
+    pdf.output(buffer)
+    buffer.seek(0)
+
+    return send_file(buffer, as_attachment=True, download_name='relatorio_vendas.pdf', mimetype='application/pdf')
