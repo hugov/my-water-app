@@ -179,11 +179,11 @@ def categoria_adicionar():
             if allows_images_store_database:
                 _image_data = file.read()
                 _category.image_data = _image_data
+                _category.image = filename
             else:
                 filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file.save(filepath)
-            
-            _category.image = filepath
+                _category.image = filepath
 
         _category.status = request.form.get('status')
         
@@ -223,17 +223,17 @@ def categoria_alterar(id):
                 return redirect(request.url)
             
             if file:
-
                 filename = secure_filename(_category.image.split('\\')[-1])
-                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                _category.image = filepath
-
+                
                 allows_images_store_database = os.environ.get('ALLOWS_IMAGES_STORE_DATABASE')
                 if allows_images_store_database:
                     _image_data = file.read()
                     _category.image_data = _image_data
+                    _category.image = filename
                 else:
+                    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                     file.save(filepath)
+                    _category.image = filepath
                 
 
         _category.status = request.form.get('status')
