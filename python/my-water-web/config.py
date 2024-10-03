@@ -10,7 +10,7 @@ class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'default_secret_key'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///default.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS') or False
-    UPLOAD_FOLDER = r'C:\hugov\images_hub_venda'
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER') or r'C:\hugov\images_hub_venda'
 
 class ProductionConfig(Config):
     DEBUG = False
