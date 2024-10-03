@@ -11,6 +11,7 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///default.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS') or False
     UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER') or r'C:\hugov\images_hub_venda'
+    ALLOWS_IMAGES_STORE_DATABASE = os.environ.get('ALLOWS_IMAGES_STORE_DATABASE') or False
 
 class ProductionConfig(Config):
     DEBUG = False

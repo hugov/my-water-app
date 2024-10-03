@@ -61,6 +61,7 @@ class Category(db.Model):
     name = db.Column(db.String(150), nullable=False)
     description = db.Column(db.String(255))
     image = db.Column(db.String(255))  # URL ou caminho da imagem
+    image_data = db.Column(db.LargeBinary, nullable=True)
     status = db.Column(db.Integer, nullable=False, default=1)
     creation_date = db.Column(db.DateTime(), default=datetime.datetime.now)
 

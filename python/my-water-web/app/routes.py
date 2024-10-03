@@ -1,7 +1,7 @@
 import logging
 import os
 
-from flask import current_app as app, render_template, flash, request, redirect, send_from_directory, session, jsonify, send_file
+from flask import current_app as app, render_template, flash, request, redirect, send_from_directory, session, jsonify, send_file, Response
 from werkzeug.utils import secure_filename
 from PIL import Image
 from datetime import datetime
@@ -144,7 +144,12 @@ def categoria_lista():
 
 @app.route('/categoria-imagem/<filename>')
 def get_categoria_imagem(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    allows_images_store_database = eval(os.environ.get('ALLOWS_IMAGES_STORE_DATABASE'))
+    if allows_images_store_database:
+        image = CategoryService.get_image_name(filename)
+        return Response(image.image_data, mimetype='image/jpeg')
+    else:
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route('/categoria-adicionar', methods=['GET', 'POST'])
 def categoria_adicionar():
@@ -168,19 +173,17 @@ def categoria_adicionar():
             return redirect(request.url)
         
         if file:
-            #filename = secure_filename(file.filename) # Nome vindo do HTML
             filename = secure_filename(create_image_name())
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-            
-            # Redimensionar e cortar a imagem
-            #with Image.open(filepath) as img:
-            #    img = img.resize((300, 300))  # Redimensionar para 300x300 pixels
-            #    img.save(filepath)  # Salvar a imagem redimensionada
-            
-            # Salvar o caminho da imagem no banco de dados
             _category.image = filepath
 
+            allows_images_store_database = os.environ.get('ALLOWS_IMAGES_STORE_DATABASE')
+            if allows_images_store_database:
+                _image_data = file.read()
+                _category.image_data = _image_data
+            else:
+                file.save(filepath)
+            
         _category.status = request.form.get('status')
         
         msg = validate_categoria_adicionar(_category)
@@ -219,11 +222,18 @@ def categoria_alterar(id):
                 return redirect(request.url)
             
             if file:
+
                 filename = secure_filename(_category.image.split('\\')[-1])
                 filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                file.save(filepath)
-
                 _category.image = filepath
+
+                allows_images_store_database = os.environ.get('ALLOWS_IMAGES_STORE_DATABASE')
+                if allows_images_store_database:
+                    _image_data = file.read()
+                    _category.image_data = _image_data
+                else:
+                    file.save(filepath)
+                
 
         _category.status = request.form.get('status')
         

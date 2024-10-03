@@ -29,3 +29,8 @@ class CategoryRepository:
         if category:
             db.session.delete(category)
             db.session.commit()
+
+    @staticmethod
+    def get_image_name(filename):
+        logger.debug("Recuperando a imagem pelo nome")
+        return Category.query.filter(Category.image.like("%" + filename + "%")).first()

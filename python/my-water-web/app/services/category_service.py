@@ -24,3 +24,7 @@ class CategoryService:
     def delete_category(id):
         return CategoryRepository.delete_by_id(id)
 
+    @staticmethod
+    def get_image_name(filename):
+        return CategoryRepository.get_image_name(filename)
+
