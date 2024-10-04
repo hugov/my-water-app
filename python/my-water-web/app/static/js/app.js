@@ -37,8 +37,14 @@ function counterCartHiden() {
   var element = document.getElementById("cart-counter");
 
   element.style.display = "none";
-  //element.className = element.className;
-  //element.style = element.style;
+}
+
+function cartHiden() {
+  var element = document.getElementById("cart-counter");
+  element.style.display = "none";
+  
+  var element = document.getElementById("cart");
+  element.style.display = "none";
 }
 
 function counterCartShow(quantity_items) {

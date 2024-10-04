@@ -29,6 +29,7 @@
                 <i class="fa fa-arrow-circle-up fa-5x text-white" style="transform: rotate(45deg);"></i>
               </div>
 
+              {% if session['admin'] %}
               <div class="hidden md:block">
                 <div class="ml-10 flex items-baseline space-x-4">
                   
@@ -44,6 +45,7 @@
                     Categorias
                   </a>
 
+                  {#
                   <a href="{{ url_for('usuario_lista') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if current_page == 'users' %}bg-gray-900 text-white aria-current="page"{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
                     Usuários
                   </a>
@@ -51,6 +53,7 @@
                   <a href="{{ url_for('perfil_lista') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if current_page == 'profiles' %}bg-gray-900 text-white aria-current="page"{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
                     Perfis
                   </a>
+                  #}
                   
                   <a href="{{ url_for('relatorio_vendas') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if current_page == 'report_sales' %}bg-gray-900 text-white aria-current="page"{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
                     Relatorio de vendas
@@ -58,15 +61,24 @@
 
                 </div>
               </div>
+              {% endif %}
 
               <!-- Carrinho de compras -->
               <div class="flex items-center">
-                <a href="{{ url_for('mostrar_carrinho') }}" class="relative px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
-                  <i class="fa fa-cart-plus fa-2x text-white"></i>
+                <a id="mostrarCarrinho" href="{{ url_for('mostrar_carrinho') }}" class="relative px-3 py-2 rounded-md text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white">
+                  <i class="fa fa-cart-plus fa-2x text-white" id="cart"></i>
                   <!-- Contador do carrinho -->
                   <div class="absolute top-0 right-0 bg-red-500 rounded-full h-6 w-6 flex items-center justify-center text-xs text-white md:text-center" id="cart-counter"></div>
                 </a>
               </div>
+
+              {% if session['admin'] %}
+                <div class="hidden md:block">
+                  <a href="{{ url_for('logout') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if current_page == 'profiles' %}bg-gray-900 text-white aria-current="page"{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
+                    Sair
+                  </a>
+                </div>
+              {% endif %}
 
             </div>
           </div>
@@ -81,6 +93,18 @@
           </footer>
         </main>
     </div>
+
+    <script>
+      document.getElementById("mostrarCarrinho").addEventListener("click", function(event) {
+        event.preventDefault();
+        
+        items = sessionStorage.getItem('quantity_itens');
+        if(items > 0) {
+            // Redirecionar manualmente, se necessário:
+            window.location.href = "{{ url_for('mostrar_carrinho') }}";
+        }
+      });
+    </script>
 
 </body>
 </html>

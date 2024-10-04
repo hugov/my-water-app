@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Login</h2>
+        <form action="/login" method="POST">
+            
+            <div class="mb-4">
+                <label for="username" class="block text-gray-700 font-medium mb-2">Nome de Usuário</label>
+                <input type="text" id="username" name="username" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="password" class="block text-gray-700 font-medium mb-2">Senha</label>
+                <input type="password" id="password" name="password" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+
+            <div class="flex justify-between">
+                <button type="submit" class="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">Entrar</button>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        // Controle de carrinho de compras
+        let cart = [];
+    
+        window.onload = function() {
+            cartHiden();
+        };
+    </script>
+{% endblock %}

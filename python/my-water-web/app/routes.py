@@ -27,15 +27,60 @@ def page_not_found(error):
 def page_not_found(error):
     return render_template('error/error500.html'), 404
 
-@app.route('/')
-def home():
-    logger.info("Acessou a página inicial")
-    return render_template('home.html', current_page = "dashboard")
+@app.before_request
+def check_login():
+    # Define rotas que não exigem verificação de login
+    allowed_routes = ['static', 'home', 'login', 'logout', 'catalogo_lista', 
+        'get_categoria_imagem', 'catalogo_item', 'get_cart', 'add_to_cart', 
+        'limpar_carrinho', 'mostrar_carrinho', 'finalizar_carrinho']
 
-@app.route('/about')
-def about():
-    logger.info("Acessou a página sobre")
-    return render_template('about.html')
+    print(f"url = {request.endpoint}")
+
+    if request.endpoint not in allowed_routes and 'user' not in session:
+        print(f"Usuário permitido!" )
+
+        # Redireciona o usuário para a página de login se não estiver logado
+        return redirect(url_for('login'))
+
+#@app.route('/')
+#def home():
+#    logger.info("Acessando a área pública")
+#    #return render_template('home.html', current_page = "dashboard")
+#    redirect(url_for('catalogo_lista'))
+
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    logger.info("Acessou a página login")
+    if request.method == "GET":
+        return render_template('/admin/login.html')
+
+    if request.method == "POST":
+
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        date = datetime.now()
+        date_format = date.strftime("%d%m%Y")
+        password_today = f"admin#{date_format}"
+
+        if username == "admin" and password == password_today:
+
+            if 'user' not in session:
+                session['user'] = "Admin"
+                session['admin'] = True
+
+            return redirect(url_for('catalogo_lista'))
+        else:
+            flash("Usuário ou senha estão incorretos.")
+
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('user', None)
+    session.pop('admin', None)
+    session.pop('cart', None)
+
+    return redirect(url_for('login'))
 
 #
 # Rota: Categoria
@@ -470,6 +515,7 @@ def validate_perfil_adicionar(profile: Category):
 # Rota: Catalogo
 #
 
+@app.route('/')
 @app.route('/catalogo-lista')
 def catalogo_lista():
     logger.info("Listando as categorias cadastradas")
