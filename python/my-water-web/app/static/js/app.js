@@ -23,3 +23,30 @@ function formatCurrency(value) {
   return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
+function updateQuantityItens() {
+  const quantity_items = sessionStorage.getItem('quantity_itens');
+  if(quantity_items > 0) {
+    counterCartShow(quantity_items);
+  } else {
+    counterCartHiden();
+  }
+  
+}
+
+function counterCartHiden() {
+  var element = document.getElementById("cart-counter");
+
+  element.style.display = "none";
+  //element.className = element.className;
+  //element.style = element.style;
+}
+
+function counterCartShow(quantity_items) {
+  var element = document.getElementById("cart-counter");
+
+  element.style.display = "block";
+  element.innerText = quantity_items;
+  
+  //element.className = element.className;
+  element.style = element.style;
+}

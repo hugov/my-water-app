@@ -128,7 +128,8 @@
 
         if (cart.length === 0) {
             sessionStorage.removeItem('quantity_itens');
-            document.getElementById("emptyCartMessage").style.display = "block";
+            //document.getElementById("emptyCartMessage").style.display = "block";
+            updateQuantityItens();
         } else {
             cart.forEach(item => {
                 const itemTotal = item.price * item.quantity;
@@ -144,9 +145,10 @@
                 cartItemsDiv.appendChild(cartItem);
 
                 cartCount += item.quantity;
-                document.getElementById('cart-counter').style.display = "block";
-                document.getElementById('cart-counter').innerText = cartCount;
+                //document.getElementById('cart-counter').style.display = "block";
+                //document.getElementById('cart-counter').innerText = cartCount;
                 sessionStorage.setItem('quantity_itens', cartCount);
+                updateQuantityItens();
             });
             
             if(document.getElementById("emptyCartMessage")) {
@@ -164,6 +166,8 @@
             .then(response => response.json())
             .then(cart => updateCartDisplay(cart))
             .catch(error => console.error('Erro ao carregar o carrinho:', error));
+
+        //updateQuantityItens();
     };
 </script>
 
