@@ -59,8 +59,8 @@
         <span id="cartTotal">R$ 0,00</span>
     </div>
     <div class="space-y-10 text-right">
-        <a href="{{ url_for('limpar_carrinho') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if current_page == 'profiles' %}bg-gray-900 text-white aria-current="page"{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
-            Limpar comprar
+        <a id="limparCarrinho" href="{{ url_for('limpar_carrinho') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if current_page == 'profiles' %}bg-gray-900 text-white aria-current="page"{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
+            Esvaziar carrinho
         </a>
         <a href="{{ url_for('mostrar_carrinho') }}" class="px-3 py-2 rounded-md text-sm font-medium {% if current_page == 'profiles' %}bg-gray-900 text-white aria-current="page"{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
             Finalizar compra
@@ -71,6 +71,16 @@
 <script>
     // Controle de carrinho de compras
     let cart = [];
+
+    document.getElementById("limparCarrinho").addEventListener("click", function(event) {
+        event.preventDefault();  // Impede o redirecionamento automático
+        
+        sessionStorage.removeItem('quantity_itens');
+        document.getElementById('cart-counter').style.display = "none";
+
+        // Redirecionar manualmente, se necessário:
+        window.location.href = "{{ url_for('limpar_carrinho') }}";
+    });
 
     function changeQuantity(itemId, change) {
         const input = document.getElementById(itemId);
@@ -114,8 +124,8 @@
         let total = 0;
         let cartCount = 0;
 
-        console.log('cart: ', cart);
         if (cart.length === 0) {
+            sessionStorage.removeItem('quantity_itens');
             document.getElementById("emptyCartMessage").style.display = "block";
         } else {
             cart.forEach(item => {
@@ -132,16 +142,15 @@
                 cartItemsDiv.appendChild(cartItem);
 
                 cartCount += item.quantity;
+                document.getElementById('cart-counter').style.display = "block";
                 document.getElementById('cart-counter').innerText = cartCount;
+                sessionStorage.setItem('quantity_itens', cartCount);
             });
             
-            console.log('Executando');
             if(document.getElementById("emptyCartMessage")) {
-                console.log('Executando 1');
-                document.getElementById("emptyCartMessage").style.display = "none"; // Esconder mensagem de carrinho vazio
+                document.getElementById("emptyCartMessage").style.display = "none";
             }
 
-            console.log('Executando 2');
         }
 
         // Atualizar o total

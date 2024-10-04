@@ -9,8 +9,8 @@ class ReportService:
     # Order
 
     @staticmethod
-    def report_sales(category_filter, product_filter, start_date, end_date):
-        _report = ReportRepository.report_sales(category_filter, product_filter, start_date, end_date)
+    def report_sales(start_date, end_date):
+        _report = ReportRepository.report_sales(start_date, end_date)
         return _report
 
     

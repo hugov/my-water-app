@@ -1,7 +1,7 @@
 import logging
 import os
 
-from flask import current_app as app, render_template, flash, request, redirect, send_from_directory, session, jsonify, send_file, Response
+from flask import current_app as app, render_template, flash, request, redirect, send_from_directory, session, jsonify, send_file, Response, make_response
 from werkzeug.utils import secure_filename
 from PIL import Image
 from datetime import datetime
@@ -557,46 +557,63 @@ def relatorio_vendas():
         return render_template('report/report_sales.html', current_page="report_sales")
     else:
 
-        category_filter = request.form.get('categoria')
-        product_filter = request.form.get('produto')
         start_date = request.form.get('data_inicio')
         end_date = request.form.get('data_fim')
 
-        if start_date:
-            data_inicio = datetime.strptime(start_date, '%Y-%m-%d')
-        if end_date:
-            data_fim = datetime.strptime(end_date, '%Y-%m-%d')
-
-        vendas = ReportService.report_sales(category_filter, product_filter, data_inicio, data_fim)
+        vendas = ReportService.report_sales(start_date, end_date)
 
         if request.method == 'POST' and request.form.get('export_pdf'):
             return exportar_pdf(vendas)
 
-        return render_template('report/report_sales.html', vendas=vendas)
+        return render_template('report/report_sales.html', vendas=vendas, current_page="report_sales")
+
+class Venda:
+    def __init__(self, categoria, produto, quantidade, data_venda):
+        self.categoria = categoria
+        self.produto = produto
+        self.quantidade = quantidade
+        self.data_venda = data_venda
+
+class PDF(FPDF):
+    def header(self):
+        self.set_font("Arial", "B", 12)
+        self.cell(0, 10, "Relatório de Vendas", 0, 1, "C")
+        self.ln(10)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font("Arial", "I", 8)
+        self.cell(0, 10, f"Página {self.page_no()}", 0, 0, "C")
 
 def exportar_pdf(vendas):
-    pdf = FPDF()
+    pdf = PDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
 
-    pdf.cell(200, 10, txt="Relatório de Vendas", ln=True, align='C')
-    pdf.ln(10)
-
-    pdf.cell(50, 10, 'Categoria', border=1)
-    pdf.cell(50, 10, 'Produto', border=1)
-    pdf.cell(30, 10, 'Quantidade', border=1)
-    pdf.cell(50, 10, 'Data de Venda', border=1)
+    # Cabeçalho da tabela
+    pdf.set_fill_color(240, 240, 240)  # Cor de fundo para o cabeçalho
+    pdf.cell(50, 10, 'Categoria', border=1, fill=True)
+    pdf.cell(50, 10, 'Produto', border=1, fill=True)
+    pdf.cell(30, 10, 'Quantidade', border=1, fill=True)
+    pdf.cell(50, 10, 'Data de Venda', border=1, fill=True)
     pdf.ln()
 
+    # Corpo da tabela
+    pdf.set_fill_color(255, 255, 255)  # Cor de fundo para as linhas do corpo
     for venda in vendas:
-        pdf.cell(50, 10, venda.categoria, border=1)
-        pdf.cell(50, 10, venda.produto, border=1)
-        pdf.cell(30, 10, str(venda.quantidade), border=1)
-        pdf.cell(50, 10, venda.data_venda.strftime("%d/%m/%Y"), border=1)
+        pdf.cell(50, 10, venda.categoria, border=1, fill=True)
+        pdf.cell(50, 10, venda.produto, border=1, fill=True)
+        pdf.cell(30, 10, str(venda.quantidade), border=1, fill=True)
+        pdf.cell(50, 10, venda.data_venda.strftime("%d/%m/%Y"), border=1, fill=True)
         pdf.ln()
 
     buffer = BytesIO()
-    pdf.output(buffer)
-    buffer.seek(0)
+    pdf_output = pdf.output(dest='S')  # Gera o PDF como uma string
+    buffer.write(pdf_output.encode('latin1'))  # Escreve no buffer como bytes
+    buffer.seek(0)  # Reposiciona o ponteiro no início do buffer
 
+    response = make_response(buffer.getvalue())  # Cria a resposta Flask com o conteúdo do buffer
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=relatorio_vendas.pdf'
+    #return response
     return send_file(buffer, as_attachment=True, download_name='relatorio_vendas.pdf', mimetype='application/pdf')

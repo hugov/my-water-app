@@ -32,15 +32,28 @@
           align-items: center;
           border: 1px solid #000;
           font-weight: bold;
+          display: none;
       }
     </style>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js" integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-    
 
-    <!--<script src="https://preline.co/assets/vendor/preline/dist/index.js?v=2.3.0"></script>-->
-
+    <script>
+      function updateQuantityItens() {
+        const quantity_items = sessionStorage.getItem('quantity_itens');
+        if(quantity_items) {
+          console.log('quantity items session: ', quantity_items);
+          document.getElementById('cart-counter').style.display = "block";
+          document.getElementById('cart-counter').innerText = quantity_items;
+        }
+        
+      }
+  
+      window.onload = function() {
+        updateQuantityItens();
+      };
+  </script>
     
 </head>
 <body class="h-full">

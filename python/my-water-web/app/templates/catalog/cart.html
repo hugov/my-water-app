@@ -60,6 +60,10 @@
         })
         .then(response => {
             if (response.ok) {
+                console.log('Carrinho finalizado com sucesso');
+                sessionStorage.removeItem('quantity_itens');
+                document.getElementById('cart-counter').style.display = "none";
+
                 window.location = '/catalogo-lista';
             } else {
                 console.error('Erro ao fazer upload da imagem.');
@@ -70,22 +74,6 @@
         });
         
     });
-
-    function finalizeCart() {
-        // Enviar requisição AJAX para adicionar ao carrinho
-        fetch('/finalizar-carrinho', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(cart => {
-            console.log('Compra finalizada com sucesso');
-        })
-        .catch(error => console.error('Erro ao finalizar o carrinho:', error));
-       
-    }
 
     function updateCartDisplay(cart) {
         const cartItemsDiv = document.getElementById("cartItems");
