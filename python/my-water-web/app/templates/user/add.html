@@ -17,15 +17,15 @@
         <form action="#" method="POST">
             <div class="mb-4">
                 <label for="name" class="block text-gray-700 font-medium mb-2">Nome</label>
-                <input type="text" id="name" name="name" value="{{user.name}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="text" id="name" name="name" value="{{user.name or ''}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
                 <label for="email" class="block text-gray-700 font-medium mb-2">Email</label>
-                <input type="email" id="email" name="email" value="{{user.email}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="email" id="email" name="email" value="{{user.email or ''}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
                 <label for="document" class="block text-gray-700 font-medium mb-2">Documento</label>
-                <input type="text" id="document" name="document" value="{{user.document}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="text" id="document" name="document" value="{{user.document or ''}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
                 <label for="phone" class="block text-gray-700 font-medium mb-2">Telefone</label>
@@ -33,7 +33,7 @@
             </div>
             <div class="mb-4">
                 <label for="username" class="block text-gray-700 font-medium mb-2">Nome de Usuário</label>
-                <input type="text" id="username" name="username" value="{{user.username}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="text" id="username" name="username" value="{{user.username or ''}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
                 <label for="password" class="block text-gray-700 font-medium mb-2">Senha</label>

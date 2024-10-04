@@ -17,11 +17,11 @@
         <form action="#" method="POST">
             <div class="mb-4">
                 <label for="name" class="block text-gray-700 font-medium mb-2">Nome</label>
-                <input type="text" id="name" name="name" value="{{profile.name}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="text" id="name" name="name" value="{{profile.name or ''}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
                 <label for="description" class="block text-gray-700 font-medium mb-2">Descrição</label>
-                <textarea id="description" name="description" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" required>{{profile.description}}</textarea>
+                <textarea id="description" name="description" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" required>{{profile.description or ''}}</textarea>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 font-medium mb-2">Permissões</label>

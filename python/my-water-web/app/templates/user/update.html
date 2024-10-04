@@ -17,23 +17,23 @@
         <form action="#" method="POST">
             <div class="mb-4">
                 <label for="name" class="block text-gray-700 font-medium mb-2">Nome</label>
-                <input type="text" id="name" name="name" value="{{user.name if user.name != None}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="text" id="name" name="name" value="{{user.name or ''}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
                 <label for="email" class="block text-gray-700 font-medium mb-2">E-mail</label>
-                <input type="email" id="email" name="email" value="{{user.email if user.email != None}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="email" id="email" name="email" value="{{user.email or ''}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
                 <label for="document" class="block text-gray-700 font-medium mb-2">Documento</label>
-                <input type="text" id="document" name="document" value="{{user.document if user.document != None}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="text" id="document" name="document" value="{{user.document or ''}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
                 <label for="phone" class="block text-gray-700 font-medium mb-2">Telefone</label>
-                <input type="tel" id="phone" name="phone" value="{{user.phone if user.phone != None}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="tel" id="phone" name="phone" value="{{user.phone or ''}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
                 <label for="username" class="block text-gray-700 font-medium mb-2">Nome de Usuário</label>
-                <input type="text" id="username" name="username" value="{{user.username if user.username != None}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="text" id="username" name="username" value="{{user.username or ''}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
                 <label for="password" class="block text-gray-700 font-medium mb-2">Senha</label>
@@ -41,7 +41,7 @@
             </div>
             <div class="mb-6">
                 <label for="status" class="block text-gray-700 font-medium mb-2">Situação</label>
-                <select id="status" name="status" value="{{user.status}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <select id="status" name="status" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     <option value="">Selecione</option>
                     <option value="1" {{ 'selected' if user.status == 1 }}>Ativo</option>
                     <option value="0" {{ 'selected' if user.status == 0 }}>Inativo</option>
