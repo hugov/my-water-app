@@ -29,24 +29,12 @@ def page_not_found(error):
 
 @app.before_request
 def check_login():
-    # Define rotas que não exigem verificação de login
     allowed_routes = ['static', 'home', 'login', 'logout', 'catalogo_lista', 
         'get_categoria_imagem', 'catalogo_item', 'get_cart', 'add_to_cart', 
         'limpar_carrinho', 'mostrar_carrinho', 'finalizar_carrinho']
 
-    print(f"url = {request.endpoint}")
-
     if request.endpoint not in allowed_routes and 'user' not in session:
-        print(f"Usuário permitido!" )
-
-        # Redireciona o usuário para a página de login se não estiver logado
         return redirect(url_for('login'))
-
-#@app.route('/')
-#def home():
-#    logger.info("Acessando a área pública")
-#    #return render_template('home.html', current_page = "dashboard")
-#    redirect(url_for('catalogo_lista'))
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
@@ -75,7 +63,6 @@ def login():
 
 @app.route('/logout')
 def logout():
-    # remove the username from the session if it's there
     session.pop('user', None)
     session.pop('admin', None)
     session.pop('cart', None)
@@ -680,5 +667,6 @@ def exportar_pdf(vendas):
     response = make_response(buffer.getvalue())  # Cria a resposta Flask com o conteúdo do buffer
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'inline; filename=relatorio_vendas.pdf'
+    
     #return response
     return send_file(buffer, as_attachment=True, download_name='relatorio_vendas.pdf', mimetype='application/pdf')

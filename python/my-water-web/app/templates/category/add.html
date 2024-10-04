@@ -117,7 +117,6 @@
                 if (response.ok) {
                     window.location = '/categoria-lista';
                 } else {
-                    console.error('Erro ao fazer upload da imagem.');
                     return response.json().then(data => {
                         if (data.errors) {
                             flash(data.errors);
