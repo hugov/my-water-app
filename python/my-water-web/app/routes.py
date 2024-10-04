@@ -38,93 +38,6 @@ def about():
     return render_template('about.html')
 
 #
-# Rota: Produto
-#
-
-@app.route('/produto-lista')
-def produto_lista():
-    logger.info("Listando os produtos cadastrados")
-
-    products = ProductService.list_product()
-    products_list = [product.to_dict() for product in products]
-
-    return render_template('/product/index.html', products =  products_list, current_page = "products")
-
-@app.route('/produto-adicionar', methods=['GET' , 'POST'])
-def produto_adicionar():
-    logger.info("Adicionando um novo produto")
-
-    _product = Product()
-    _categories = CategoryService.list_category()
-
-    if request.method == 'GET':
-        return render_template('/product/add.html', product = _product, categories = _categories, current_page = "products")
-    else:
-        _product.name = request.form.get('name')
-        _product.description = request.form.get('description')
-        _product.category_id = request.form.get('category_id')
-        _product.price = request.form.get('price')
-        _product.status = request.form.get('status')
-
-        msg = validate_produto_adicionar(_product)
-        if msg:
-            flash(msg)
-            return render_template('/product/add.html', product = _product, current_page = "products")
-
-        ProductService.create_product(_product)
-        return redirect('/produto-lista')
-
-@app.route('/produto-consultar/<int:id>')
-def produto_consultar(id):
-    logger.info(f"Consultando o produto {id}")
-    
-    _product = ProductService.get_product(id)
-    _categories = CategoryService.list_category()
-    return render_template('/product/retrieve.html', product = _product, categories = _categories, current_page = "products")
-
-@app.route('/produto-alterar/<int:id>', methods=['GET', 'POST'])
-def produto_alterar(id):
-    logger.info("Acessou a listagem de produtos")
-
-    _product = ProductService.get_product(id)
-    _categories = CategoryService.list_category()
-
-    if request.method == 'GET':
-        return render_template('/product/update.html', product = _product, categories = _categories, current_page = "products")
-    else:
-        _product.name = request.form.get('name')
-        _product.description = request.form.get('description')
-        _product.category_id = request.form.get('category_id')
-        _product.price = request.form.get('price')
-        _product.status = request.form.get('status')
-
-        msg = validate_produto_adicionar(_product)
-        if msg:
-            flash(msg)
-            return render_template('/product/update.html', product = _product, current_page = "products")
-
-        ProductService.create_product(_product)
-        return redirect('/produto-lista')
-
-@app.route('/produto-excluir/<int:id>')
-def produto_exluir(id):
-    logger.info("Acessou a listagem de produtos")
-    ProductService.delete_product(id=id)
-    return redirect('/produto-lista')
-
-def validate_produto_adicionar(produto: Product):
-    if not produto:
-        return 'Nenhum produto foi informado'
-    elif produto.description == None or produto.description == '':
-        return 'Preencha a descrição do produto'
-    elif len(produto.description) < 5 and len(produto.description) > 50:
-        return 'A descrição do produto precisa ter entre 5 e 50 caracteres'
-    elif produto.category_id == None or produto.category_id == '-1':
-        return 'Selecione uma opção válida da categoria'
-    else:
-        return ''
-
-#
 # Rota: Categoria
 #
 
@@ -195,14 +108,12 @@ def categoria_adicionar():
         CategoryService.create_category(_category)
         return redirect('/categoria-lista')
 
-
 @app.route('/categoria-consultar/<int:id>')
 def categoria_consultar(id):
     logger.info(f"Consultando a categoria {id}")
     
     _category = CategoryService.get_category(id)
     return render_template('/category/retrieve.html', category=_category, current_page="categories")
-
 
 @app.route('/categoria-alterar/<int:id>', methods=['GET', 'POST'])
 def categoria_alterar(id):
@@ -246,7 +157,6 @@ def categoria_alterar(id):
         CategoryService.create_category(_category)
         return redirect('/categoria-lista')
 
-
 @app.route('/categoria-excluir/<int:id>')
 def categoria_excluir(id):
     logger.info(f"Excluindo a categoria {id}")
@@ -266,6 +176,113 @@ def validate_categoria_adicionar(categoria: Category):
     else:
         return ''
 
+#
+# Rota: Produto
+#
+
+@app.route('/produto-lista')
+def produto_lista():
+    logger.info("Listando os produtos cadastrados")
+
+    products = ProductService.list_product()
+    products_list = [product.to_dict() for product in products]
+
+    return render_template('/product/index.html', products =  products_list, current_page = "products")
+
+@app.route('/produto-adicionar', methods=['GET' , 'POST'])
+def produto_adicionar():
+    logger.info("Adicionando um novo produto")
+
+    _product = Product()
+    _categories = CategoryService.list_category()
+
+    if request.method == 'GET':
+        return render_template('/product/add.html', product = _product, categories = _categories, current_page = "products")
+    else:
+        _product.name = request.form.get('name')
+        _product.description = request.form.get('description')
+        _product.category_id = int(request.form.get('category_id'))
+        _product.price = request.form.get('price')
+        _product.status = request.form.get('status')
+
+        msg = validate_form_product(_product)
+        if msg:
+            for error in msg:
+                flash(error)
+            return render_template('/product/add.html', product=_product, categories=_categories, current_page="products")
+
+        ProductService.create_product(_product)
+        return redirect('/produto-lista')
+
+@app.route('/produto-consultar/<int:id>')
+def produto_consultar(id):
+    logger.info(f"Consultando o produto {id}")
+    
+    _product = ProductService.get_product(id)
+    _categories = CategoryService.list_category()
+    return render_template('/product/retrieve.html', product = _product, categories = _categories, current_page = "products")
+
+@app.route('/produto-alterar/<int:id>', methods=['GET', 'POST'])
+def produto_alterar(id):
+    logger.info("Acessou a listagem de produtos")
+
+    _product = ProductService.get_product(id)
+    _categories = CategoryService.list_category()
+
+    if request.method == 'GET':
+        return render_template('/product/update.html', product = _product, categories = _categories, current_page = "products")
+    else:
+        _product.name = request.form.get('name')
+        _product.description = request.form.get('description')
+        _product.category_id = int(request.form.get('category_id'))
+        _product.price = request.form.get('price')
+        _product.status = request.form.get('status')
+
+        msg = validate_form_product(_product)
+        if msg:
+            for error in msg:
+                flash(error)
+            return render_template('/product/update.html', product=_product, categories=_categories, current_page="products")
+
+        ProductService.create_product(_product)
+        return redirect('/produto-lista')
+
+@app.route('/produto-excluir/<int:id>')
+def produto_exluir(id):
+    logger.info("Acessou a listagem de produtos")
+    ProductService.delete_product(id=id)
+    return redirect('/produto-lista')
+
+def validate_form_product(produto: Product):
+    errors = []
+
+    # Validação do nome
+    if not produto.name:
+        errors.append('O nome do produto é obrigatório.')
+    elif len(produto.name) < 4 or len(produto.name) > 50:
+        errors.append('O nome do produto deve ter entre 4 e 50 caracteres.')
+
+    # Validação da descrição
+    if not produto.description:
+        errors.append('A descrição do produto é obrigatória.')
+    elif len(produto.description) < 4 or len(produto.description) > 50:
+        errors.append('A descrição do produto deve ter entre 4 e 50 caracteres.')
+
+    # Validação da categoria
+    if not produto.category_id:
+        errors.append('A categoria do produto é obrigatória.')
+
+    # Validação do preço
+    if not produto.price:
+        errors.append('O preço do produto é obrigatório.')
+    else:
+        try:
+            if float(produto.price) <= 0.00:
+                errors.append('O preço do produto deve ser maior que R$ 0,00.')
+        except ValueError:
+            errors.append('O preço do produto deve ser um número válido.')
+
+    return errors
 
 #
 # Rota: Usuário

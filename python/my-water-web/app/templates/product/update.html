@@ -4,11 +4,13 @@
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-            </ul>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 pb-1 rounded relative " role="alert">
+                <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            </div>
         {% endif %}
     {% endwith %}
 
@@ -17,15 +19,15 @@
         <form action="#" method="POST">
             <div class="mb-4">
                 <label for="name" class="block text-gray-700 font-medium mb-2">Nome</label>
-                <input type="text" id="name" name="name" value="{{product.name if product.name != None}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="text" id="name" name="name" value="{{product.name or ''}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
             <div class="mb-4">
                 <label for="description" class="block text-gray-700 font-medium mb-2">Descrição</label>
-                <textarea id="description" name="description" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" required>{{product.description}}</textarea>
+                <textarea id="description" name="description" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" required>{{ product.description or '' }}</textarea>
             </div>
             <div class="mb-6">
                 <label for="categoria" class="block text-gray-700 font-medium mb-2">Categoria</label>
-                <select id="category_id" name="category_id" value="{{product.category_id}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <select id="category_id" name="category_id" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="-1">Selecione</option>
                     {% for category in categories %}
                         <option value="{{category.id}}" {{ 'selected' if category.id == product.category_id }} >{{ category.name }}</option>
