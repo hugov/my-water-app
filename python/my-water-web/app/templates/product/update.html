@@ -14,6 +14,8 @@
         {% endif %}
     {% endwith %}
 
+    <br>
+
     <div class="bg-white p-8 rounded-lg shadow-lg w-full">
         <h2 class="text-2xl font-bold mb-6 text-gray-800">Atualização de produto</h2>
         <form action="#" method="POST">
@@ -40,7 +42,7 @@
             </div>
             <div class="mb-6">
                 <label for="status" class="block text-gray-700 font-medium mb-2">Situação</label>
-                <select id="status" name="status" value="{{product.status}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <select id="status" name="status" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                     <option value="">Selecione</option>
                     <option value="1" {{ 'selected' if product.status == '1' }} >Ativo</option>
                     <option value="0" {{ 'selected' if product.status == '0' }} >Inativo</option>

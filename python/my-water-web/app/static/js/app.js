@@ -16,7 +16,6 @@ function formatPhoneNumber(phone) {
 }
 
 function formatCurrencyWithPrefix(value) {
-  console.log( 'valor formatado: ', value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 }
 

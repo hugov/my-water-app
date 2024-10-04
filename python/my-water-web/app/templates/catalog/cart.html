@@ -60,7 +60,6 @@
         })
         .then(response => {
             if (response.ok) {
-                console.log('Carrinho finalizado com sucesso');
                 sessionStorage.removeItem('quantity_itens');
                 document.getElementById('cart-counter').style.display = "none";
 
@@ -84,7 +83,6 @@
         let total = 0;
         let cartCount = 0;
 
-        console.log('cart: ', cart);
         if (cart.length === 0) {
             document.getElementById("emptyCartMessage").style.display = "block";
         } else {

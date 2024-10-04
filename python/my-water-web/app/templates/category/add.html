@@ -10,26 +10,21 @@
     }
 </style>
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
+<div id="message-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 pb-1 rounded relative list-none" role="alert">
+</div>
+
+<br>
 
 <div class="bg-white p-8 rounded-lg shadow-lg w-full">
     <h2 class="text-2xl font-bold mb-6 text-gray-800">Inclusão de Categoria</h2>
     <form id="categoryForm" action="#" method="POST" enctype="multipart/form-data">
         <div class="mb-4">
             <label for="name" class="block text-gray-700 font-medium mb-2">Nome</label>
-            <input type="text" id="name" name="name" value="{{category.name}}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            <input type="text" id="name" name="name" value="{{ category.name or '' }}" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
         </div>
         <div class="mb-4">
             <label for="description" class="block text-gray-700 font-medium mb-2">Descrição</label>
-            <textarea id="description" name="description" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" required>{{category.description}}</textarea>
+            <textarea id="description" name="description" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" required>{{ category.description or '' }}</textarea>
         </div>
 
         <div class="mb-4">
@@ -59,6 +54,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.js" integrity="sha512-LjPH94gotDTvKhoxqvR5xR2Nur8vO5RKelQmG52jlZo7SwI5WLYwDInPn1n8H9tR0zYqTqfNxWszUEy93cHHwg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     let cropper;
+
+    function flash(messages) {
+        const alertDiv = document.getElementById("message-error");
+        alertDiv.innerHTML = `<ul>`;
+        for (let i = 0; i < messages.length; i++) {
+            alertDiv.innerHTML += `<li>${messages[i]}</li>`;
+        }
+        alertDiv.innerHTML += `</ul>`;  // Fecha a lista
+
+        alertDiv.style.display = "block";
+    }
 
     document.getElementById('inputImage').addEventListener('change', function (e) {
         const files = e.target.files;
@@ -109,10 +115,14 @@
             })
             .then(response => {
                 if (response.ok) {
-                    //window.location.reload(); // Recarregar a página após o upload
                     window.location = '/categoria-lista';
                 } else {
                     console.error('Erro ao fazer upload da imagem.');
+                    return response.json().then(data => {
+                        if (data.errors) {
+                            flash(data.errors);
+                        }
+                    });
                 }
             })
             .catch(error => {

@@ -43,7 +43,6 @@
       function updateQuantityItens() {
         const quantity_items = sessionStorage.getItem('quantity_itens');
         if(quantity_items) {
-          console.log('quantity items session: ', quantity_items);
           document.getElementById('cart-counter').style.display = "block";
           document.getElementById('cart-counter').innerText = quantity_items;
         }

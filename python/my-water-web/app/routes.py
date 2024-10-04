@@ -1,7 +1,7 @@
 import logging
 import os
 
-from flask import current_app as app, render_template, flash, request, redirect, send_from_directory, session, jsonify, send_file, Response, make_response
+from flask import current_app as app, url_for, render_template, flash, request, redirect, send_from_directory, session, jsonify, send_file, Response, make_response
 from werkzeug.utils import secure_filename
 from PIL import Image
 from datetime import datetime
@@ -88,7 +88,7 @@ def categoria_adicionar():
         if file:
             filename = secure_filename(create_image_name())
 
-            allows_images_store_database = os.environ.get('ALLOWS_IMAGES_STORE_DATABASE')
+            allows_images_store_database = eval(os.environ.get('ALLOWS_IMAGES_STORE_DATABASE'))
             if allows_images_store_database:
                 _image_data = file.read()
                 _category.image_data = _image_data
@@ -100,13 +100,12 @@ def categoria_adicionar():
 
         _category.status = request.form.get('status')
         
-        msg = validate_categoria_adicionar(_category)
+        msg = validate_form_category(_category)
         if msg:
-            flash(msg)
-            return render_template('/category/add.html', category=_category, current_page="categories")
-        
+            return jsonify({'errors': msg}), 400
+
         CategoryService.create_category(_category)
-        return redirect('/categoria-lista')
+        return jsonify({'success': True}), 200
 
 @app.route('/categoria-consultar/<int:id>')
 def categoria_consultar(id):
@@ -136,7 +135,7 @@ def categoria_alterar(id):
             if file:
                 filename = secure_filename(_category.image.split('\\')[-1])
                 
-                allows_images_store_database = os.environ.get('ALLOWS_IMAGES_STORE_DATABASE')
+                allows_images_store_database = eval(os.environ.get('ALLOWS_IMAGES_STORE_DATABASE'))
                 if allows_images_store_database:
                     _image_data = file.read()
                     _category.image_data = _image_data
@@ -148,14 +147,13 @@ def categoria_alterar(id):
                 
 
         _category.status = request.form.get('status')
-        
-        msg = validate_categoria_adicionar(_category)
+
+        msg = validate_form_category(_category)
         if msg:
-            flash(msg)
-            return render_template('/category/update.html', category=_category, current_page="categories")
+            return jsonify({'errors': msg}), 400
         
         CategoryService.create_category(_category)
-        return redirect('/categoria-lista')
+        return jsonify({'success': True}), 200
 
 @app.route('/categoria-excluir/<int:id>')
 def categoria_excluir(id):
@@ -163,18 +161,22 @@ def categoria_excluir(id):
     CategoryService.delete_category(id=id)
     return redirect('/categoria-lista')
 
+def validate_form_category(categoria: Category):
+    errors = []
 
-def validate_categoria_adicionar(categoria: Category):
-    if not categoria:
-        return 'Nenhuma categoria foi informada'
-    elif categoria.name is None or categoria.name == '':
-        return 'Preencha o nome da categoria'
-    elif categoria.description is None or categoria.description == '':
-        return 'Preencha a descrição da categoria'
-    elif len(categoria.description) < 5 or len(categoria.description) > 50:
-        return 'A descrição da categoria precisa ter entre 5 e 50 caracteres'
-    else:
-        return ''
+    # Validação do nome
+    if not categoria.name:
+        errors.append('O nome da categoria é obrigatório.')
+    elif len(categoria.name) < 4 or len(categoria.name) > 50:
+        errors.append('O nome da categoria deve ter entre 4 e 50 caracteres.')
+
+    # Validação da descrição
+    if not categoria.description:
+        errors.append('A descrição da categoria é obrigatória.')
+    elif len(categoria.description) < 4 or len(categoria.description) > 50:
+        errors.append('A descrição da categoria deve ter entre 4 e 50 caracteres.')
+
+    return errors
 
 #
 # Rota: Produto
